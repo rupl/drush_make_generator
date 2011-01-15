@@ -260,13 +260,13 @@ function makeContrib($contrib='',$subdir=CONTRIB_DIR){
 /**
  * generate makefile - tha biznass
  */
-function makeFile($version,$core,$contrib,$libs){
+function makeFile($token,$version,$core,$contrib,$libs){
 
   $makefile = '; $Id$
 ;
 ; ----------------
 ; Generated makefile from http://drushmake.me
-; Permanent URL: http://drushmake.me/file/'.$token.'
+; Permanent URL: http://drushmake.me/file.php?token='.$token.'
 ; ----------------
 ;
 ; This is a working makefile - try it! Any line starting with a `;` is a comment.
@@ -295,7 +295,7 @@ api = 2
 '.makeCore($core).'
   
   
-; Projects
+; Modules
 ; --------
 '.makeContrib($contrib).'
   

@@ -14,7 +14,7 @@ while ($m = mysql_fetch_assoc($pullResult)) {
   $share    = TRUE;
 }
 
-$makefile = makeFile($version,$core,$contrib,$libs);
+$makefile = makeFile($token,$version,$core,$contrib,$libs);
 
 ?><!doctype html>  
 
