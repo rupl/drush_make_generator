@@ -18,6 +18,10 @@ $version = ($_GET['v']) ? $_GET['v'] : 6;
 // directory to install contrib modules
 define('CONTRIB_DIR','contrib');
 
+// path to drush. default assumes you have an alias 'drush'
+define('PATH_TO_DRUSH','drush');
+
+
 
 
 /**

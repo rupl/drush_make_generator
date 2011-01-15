@@ -29,7 +29,7 @@ include('_lib.php');
     // drush knows what the current recommended versions
     
     // fetching recommended version information
-    $cmd = "cd d".$version."; ~/Sites/drush/drush pm-releases ".$p['unique']." | grep 'Recommended'";
+    $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Recommended'";
     $result = trim(`$cmd`);
 
     // debug 
@@ -99,7 +99,7 @@ include('_lib.php');
       
       
       // fetching dev version information
-      $cmd = "cd d".$version."; ~/Sites/drush/drush pm-releases ".$p['unique']." | grep 'Supported\|Development' | grep -v 'Recommended'";
+      $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Supported\|Development' | grep -v 'Recommended'";
       $result = trim(`$cmd`);
       
       print "\r\n   ".$cmd."\r\n\r\n ".$result."\r\n";
