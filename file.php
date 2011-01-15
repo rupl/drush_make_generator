@@ -57,7 +57,8 @@ $makefile = makeFile($token,$version,$core,$contrib,$libs);
 	
 	<div class="grid_12" id="what">
 		<h2>Your makefile is ready</h2>
-		<p>We've saved it for you as well! Bookmark, update, or regenerate at any time by using <a href="<?php print fileURL($token); ?>">this link</a>.</p>
+		<p>We've saved it for you as well!</p>
+		<p><a href="<?php print fileURL($token); ?>">Bookmark</a> or update at any time.</p>
 		<textarea name="makefile" id="makefile"><?php print $makefile; ?></textarea>
 	</div>
 	
