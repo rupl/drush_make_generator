@@ -1,0 +1,6 @@
+# gitignore
+.DS_Store
+d6
+d6/*
+d7
+d7/*
