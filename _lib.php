@@ -15,8 +15,8 @@ define('SQL_SEPARATOR','|');
 global $version;
 $version = ($_GET['v']) ? $_GET['v'] : 6;
 
-
-
+// directory to install contrib modules
+define('CONTRIB_DIR','contrib');
 
 
 
@@ -179,7 +179,7 @@ function makeCore($core='drupal') {
 /**
  * Makes project requests for the makefile
  */
-function makeContrib($contrib='',$subdir='contrib'){
+function makeContrib($contrib='',$subdir=CONTRIB_DIR){
   global $version;
   $v = $version;
   $output = '';
