@@ -14,14 +14,14 @@ include('_lib.php');
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	
 	<title>Drush Make Generator - Customized Drupal Installs</title>
-	<meta name="description" content="http://drushmake.me is a tool to generate make files for Drupal's command-line tool, known as Drush. Powered by Four Kitchens. ">
+	<meta name="description" content="http://drushmake.me helps you build install profiles or quickly install Drupal using drush make. Powered by Four Kitchens. ">
 	<meta name="author" content="Chris Ruppel">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="shortcut icon" href="/favicon.ico">
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 	
-	<!-- link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans" -->
+	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans">
 	<link rel="stylesheet" href="css/960.css" media="(min-width: 960px)">
 	<link rel="stylesheet" href="css/formalize.css" media="(min-width: 481px)">
 	<link rel="stylesheet" href="css/style.css?v=2">
@@ -61,8 +61,31 @@ include('_lib.php');
 	<div class="grid_12" id="generate">
 		<h2>Customize your makefile</h2>
 		<form id="generateForm" action="/generate.php" method="post">
+		  
       <?php print formCores(); ?>
-      <?php print formProjects(); ?>
+      
+      <fieldset id="fs-contrib">
+        <legend>Modules</legend>
+        <?php print formModules(); ?>
+      </fieldset>
+      <fieldset id="fs-themes">
+        <legend>Themes</legend>
+        <?php print formThemes(); ?>
+      </fieldset>
+      
+      <!-- fieldset id="fs-libs">
+        <legend>Libraries</legend>
+        <?php print formLibs(); ?>
+      </fieldset -->
+      
+      <fieldset id="fs-opts">
+        <legend>Options</legend>
+        <h4>Put modules in </h4>
+        <label for="o-contribdir">
+          /sites/all/modules/
+          <input id="o-contribdir" type="text" name="projects[opts][contrib_dir]" value="<?= CONTRIB_DIR ?>" />
+        </label>
+      </fieldset>
       
 			<button type="submit">Generate makefile</button>
 		</form>
@@ -74,7 +97,7 @@ include('_lib.php');
 	</div>
 	
 	<footer class="grid_12">
-		<p>Powered by <a href="http://fourkitchens.com">Four Kitchens</a></p>
+		<p>Code on <a href="https://github.com/rupl/drush_make_generator">github</a>. Powered by <a href="http://fourkitchens.com">Four Kitchens</a></p>
 		<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a>
 	</footer>
 	
@@ -82,13 +105,13 @@ include('_lib.php');
 	<script>!window.jQuery && document.write(unescape('%3Cscript src="js/libs/jquery-1.4.4.min.js"%3E%3C/script%3E'))</script>
 	
 	<!-- scripts concatenated and minified via ant build script-->
-		<script src="js/jquery.formalize.js"></script>
-		<script src="js/plugins.js"></script>
-		<script src="js/script.js"></script>
+		<script src="/js/jquery.formalize.js"></script>
+		<script src="/js/plugins.js"></script>
+		<script src="/js/script.js"></script>
 	<!-- end concatenated and minified scripts-->
 	
 	<!--[if lt IE 7 ]>
-		<script src="js/libs/dd_belatedpng.js"></script>
+		<script src="/js/libs/dd_belatedpng.js"></script>
 		<script> DD_belatedPNG.fix('img, .png_bg'); </script>
 	<![endif]-->
 	

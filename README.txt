@@ -12,7 +12,7 @@ website, including:
  * Drupal core or distributions
  * Modules
  * Themes
- * External libraries (like jQuery)
+ * External libraries
  * CVS and git repositories
 
 
@@ -20,15 +20,23 @@ website, including:
 INSTALLATION / SETUP
 --------------------------------------------------
 1) Import drushmake_gen.sql into a database.
-2) Check the beginning of _lib.php for all config,
-   including connection string, path to drush, and
-   a couple trivial options
+
+2) _config.php for all config
 
 3) Install each version of drupal that you want to generate makefiles for;
    The scripts expect them to live in the top directory at /d6, /d7, etc.
 
 4) I loaded 100 modules up, you may want more.
    I got all the data from this URL: http://drupal.org/project/usage
+
 5) Run /update.php once you're satisfied with your contrib list;
    It will fetch the current version for all your modules and get the
    site to produce accurate makefiles.
+
+
+TO-DO
+--------------------------------------------------
++ URL input for libraries and repos
++ Edit previously generated makefiles
++ Suggested makefiles for beginning Drupalers (social, portfolio, ecommerce)
++ Output options: makefile, zip, ?

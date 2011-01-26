@@ -9,12 +9,14 @@ $pullResult = mysql_query($pullSQL);
 while ($m = mysql_fetch_assoc($pullResult)) {
   $version  = $m['version'];
   $core     = unserialize($m['core']);
-  $contrib  = unserialize($m['contrib']);
+  $modules  = unserialize($m['modules']);
+  $themes   = unserialize($m['themes']);
   $libs     = unserialize($m['libs']);
+  $opts     = unserialize($m['opts']);
   $share    = TRUE;
 }
 
-$makefile = makeFile($token,$version,$core,$contrib,$libs);
+$makefile = makeFile($token,$version,$core,$modules,$themes,$libs,$opts);
 
 ?><!doctype html>  
 
@@ -28,7 +30,7 @@ $makefile = makeFile($token,$version,$core,$contrib,$libs);
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	
 	<title>Drush Make Generator - Customized Drupal Installs</title>
-	<meta name="description" content="http://drushmake.me is a tool to generate make files for Drupal's command-line tool, known as Drush. Powered by Four Kitchens. ">
+	<meta name="description" content="http://drushmake.me helps you build install profiles or quickly install Drupal using drush make. Powered by Four Kitchens. ">
 	<meta name="author" content="Chris Ruppel">
 	
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,10 +38,10 @@ $makefile = makeFile($token,$version,$core,$contrib,$libs);
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 	
 	<!-- link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans" -->
-	<link rel="stylesheet" href="css/960.css" media="(min-width: 960px)">
-	<link rel="stylesheet" href="css/formalize.css" media="(min-width: 481px)">
-	<link rel="stylesheet" href="css/style.css?v=2">
-	<script src="js/libs/modernizr-1.6.min.js"></script>
+	<link rel="stylesheet" href="/css/960.css" media="(min-width: 960px)">
+	<link rel="stylesheet" href="/css/formalize.css" media="(min-width: 481px)">
+	<link rel="stylesheet" href="/css/style.css?v=2">
+	<script src="/js/libs/modernizr-1.6.min.js"></script>
 </head>
 
 <body class="container_12">
@@ -58,7 +60,7 @@ $makefile = makeFile($token,$version,$core,$contrib,$libs);
 	<div class="grid_12" id="what">
 		<h2>Your makefile is ready</h2>
 		<p>We've saved it for you as well!</p>
-		<p><a href="<?php print fileURL($token); ?>">Bookmark</a> or update at any time.</p>
+		<p><a href="<?php print fileURL($token); ?>">Bookmark</a> or (in the future) update at any time.</p>
 		<textarea name="makefile" id="makefile"><?php print $makefile; ?></textarea>
 	</div>
 	
@@ -73,16 +75,16 @@ $makefile = makeFile($token,$version,$core,$contrib,$libs);
 	</footer>
 	
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
-	<script>!window.jQuery && document.write(unescape('%3Cscript src="js/libs/jquery-1.4.4.min.js"%3E%3C/script%3E'))</script>
+	<script>!window.jQuery && document.write(unescape('%3Cscript src="/js/libs/jquery-1.4.4.min.js"%3E%3C/script%3E'))</script>
 	
 	<!-- scripts concatenated and minified via ant build script-->
-		<script src="js/jquery.formalize.js"></script>
-		<script src="js/plugins.js"></script>
-		<script src="js/script.js"></script>
+		<script src="/js/jquery.formalize.js"></script>
+		<script src="/js/plugins.js"></script>
+		<script src="/js/script.js"></script>
 	<!-- end concatenated and minified scripts-->
 	
 	<!--[if lt IE 7 ]>
-		<script src="js/libs/dd_belatedpng.js"></script>
+		<script src="/js/libs/dd_belatedpng.js"></script>
 		<script> DD_belatedPNG.fix('img, .png_bg'); </script>
 	<![endif]-->
 	
