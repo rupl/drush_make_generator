@@ -36,6 +36,7 @@ INSTALLATION / SETUP
 
 TO-DO
 --------------------------------------------------
++ Drupal 7 support. Obviously :)
 + URL input for libraries, Features and CVS/git
 + Edit previously generated makefiles
 + Suggested makefiles for beginning Drupalers (social, portfolio, e-commerce)
