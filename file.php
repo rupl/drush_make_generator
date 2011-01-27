@@ -2,7 +2,7 @@
 
 include('_lib.php');
 
-$token = $_REQUEST['token'];
+$token = settype($_REQUEST['token'],'int');
 $pullSQL = sprintf("SELECT * FROM `makefiles` WHERE token = '%s'; ",$token);
 $pullResult = mysql_query($pullSQL);
 
