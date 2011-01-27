@@ -10,6 +10,8 @@ if (CONFIG_FILE != 'PRESENT') {
 }
 
 
+
+
 /**
  * Fetches contrib projects as a raw DB object
  */
@@ -20,7 +22,6 @@ function fetchContrib() {
   
   return $projects;
 }
-
 
 
 /**
@@ -35,9 +36,6 @@ function fetchModules() {
 }
 
 
-
-
-
 /**
  * Fetches theme projects as a raw DB object
  */
@@ -48,6 +46,10 @@ function fetchThemes() {
   
   return $projects;
 }
+
+
+
+
 
 
 
@@ -77,7 +79,6 @@ function formCores(){
 
   return $output;
 }
-
 
 
 /**
@@ -151,7 +152,6 @@ function formModules(){
 }
 
 
-
 /**
  * Outputs fieldsets for all the contrib themes alphabetically
  */
@@ -201,8 +201,6 @@ function formThemes(){
 
   return $output;
 }
-
-
 
 
 /**
@@ -265,7 +263,6 @@ function makeCore($core='drupal',$opts) {
 }
 
 
-
 /**
  * Makes project requests for the makefile
  */
@@ -275,74 +272,29 @@ function makeModules($modules='',$opts){
   $subdir = ($opts['contrib_dir']) ? $opts['contrib_dir'] : '';
   $output = '';
 
-
-  /*
-; Each project that you would like to include in the makefile should be
-; declared under the `projects` key. The simplest declaration of a project
-; looks like this:
-  
-; To include the most recent views module:
-  
-  projects[] = views	
-  
-; This will, by default, retrieve the latest recommended version of the project
-; using its update XML feed on Drupal.org. If any of those defaults are not
-; desirable for a project, you will want to use the keyed syntax combined with
-; some options.
-  
-; If you want to retrieve a specific version of a project:
-  
-  projects[cck] = 2.6
-  
-; Or an alternative, extended syntax:
-  
-  projects[ctools][version] = 1.3
-  
-; Check out the latest version of a project from CVS. Note that when using a
-; repository as your project source, you must explictly declare the project
-; type so that drush_make knows where to put your project.
-  
-  projects[data][type] = module
-  projects[data][download][type] = cvs
-  projects[data][download][module] = contributions/modules/data
-  projects[data][download][revision] = DRUPAL-6--1
-  
-; Clone a project from github.
-  
-  projects[tao][type] = theme
-  projects[tao][download][type] = git
-  projects[tao][download][url] = git://github.com/developmentseed/tao.git
-  
-; If you want to install a module into a sub-directory, you can use the
-; `subdir` attribute.
-  
-  projects[admin_menu][subdir] = custom
-  */
-
-
   /* debug
   $output .= print_r($contrib,true);
   //*/
 
   // loop away
-  foreach($modules as $k => $v){
-    $loop = '';
-    
-    if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
-    else {$loop .= 'projects['.$k.'] = '.$v; }
-
-    $loop .= "\r\n";
+  if ($modules):
+    foreach($modules as $k => $v){
+      $loop = '';
       
-    if ($subdir && $v == 'stable'){$loop = ''; }
-    if ($subdir) {$loop .= 'projects['.$k.'][subdir] = '.$subdir."\r\n"; }
-    
-    $output .= $loop;
-  }
+      if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
+      else {$loop .= 'projects['.$k.'] = '.$v; }
+  
+      $loop .= "\r\n";
+        
+      if ($subdir && $v == 'stable'){$loop = ''; }
+      if ($subdir) {$loop .= 'projects['.$k.'][subdir] = '.$subdir."\r\n"; }
+      
+      $output .= $loop;
+    }
+  endif;
   
   return $output;
 }
-
-
 
 
 /**
@@ -359,18 +311,29 @@ function makeThemes($themes='',$opts){
   //*/
 
   // loop away
-  foreach($themes as $k => $v){
-    $loop = '';
-    
-    if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
-    else {$loop .= 'projects['.$k.'] = '.$v; }
-    
-    $output .= $loop;
-  }
+  if ($themes):
+    foreach($themes as $k => $v){
+      $loop = '';
+      
+      if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
+      else {$loop .= 'projects['.$k.'] = '.$v; }
+      
+      $loop .= "\r\n";
+      
+      $output .= $loop;
+    }
+  endif;
   
   return $output;
 }
 
+
+/**
+ * Makes library requests for the makefile
+ */
+function makeLibs($libs='',$opts){
+  // clean water and air
+}
 
 
 /**
@@ -435,6 +398,7 @@ api = 2
 
 
 
+
 /**
  * Generate URL requests for a token. For easy switching later.
  */
@@ -443,17 +407,6 @@ function fileURL($token=''){
   return '/file.php?token='.$token;
 
 }
-
-
-
-
-/**
- * Makes library requests for the makefile
- */
-function makeLibs($libs='',$opts){
-  // clean water and air
-}
-
 
 
 /**

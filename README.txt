@@ -36,7 +36,9 @@ INSTALLATION / SETUP
 
 TO-DO
 --------------------------------------------------
-+ URL input for libraries and repos
++ URL input for libraries, Features and CVS/git
 + Edit previously generated makefiles
-+ Suggested makefiles for beginning Drupalers (social, portfolio, ecommerce)
++ Suggested makefiles for beginning Drupalers (social, portfolio, e-commerce)
++ [hejrocker] Include patches along with contributed modules (http://drupalcode.org/viewvc/drupal/contributions/profiles/nodestream/nodestream.make?revision=1.1.2.41&view=markup)
+++ Place patched modules in separate directory?
 + Output options: makefile, zip, ?
