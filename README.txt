@@ -21,10 +21,10 @@ INSTALLATION / SETUP
 --------------------------------------------------
 1) Import drushmake_gen.sql into a database.
 
-2) _config.php for all config
+2) Copy _config.example.php to _config.php and make your changes
 
-3) Install each version of drupal that you want to generate makefiles for;
-   The scripts expect them to live in the top directory at /d6, /d7, etc.
+3) Install each version of drupal that you want to generate makefiles for.
+   The scripts expect them to live in the root directory at /d6, /d7, etc.
 
 4) I loaded 100 modules up, you may want more.
    I got all the data from this URL: http://drupal.org/project/usage
@@ -36,10 +36,4 @@ INSTALLATION / SETUP
 
 TO-DO
 --------------------------------------------------
-+ Drupal 7 support. Obviously :)
-+ URL input for libraries, Features and CVS/git
-+ Edit previously generated makefiles
-+ Suggested makefiles for beginning Drupalers (social, portfolio, e-commerce)
-+ [hejrocker] Include patches along with contributed modules (http://drupalcode.org/viewvc/drupal/contributions/profiles/nodestream/nodestream.make?revision=1.1.2.41&view=markup)
-++ Place patched modules in separate directory?
-+ Output options: makefile, zip, ?
+https://github.com/rupl/drush_make_generator/issues
