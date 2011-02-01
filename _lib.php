@@ -456,10 +456,12 @@ function makeLibs($libs=array(),$opts){
   // loop away
   if ($libs):
     foreach($libs as $k => $v){
+      $release = explode('~~~',$v);
+      
       $loop = '';
       $loop .=
         'libraries['.$k.'][download][type] = "file"'."\r\n".
-        'libraries['.$k.'][download][url] = "'.$v.'"'."\r\n";      
+        'libraries['.$k.'][download][url] = "'.$release[0].'"'."\r\n";      
 
       $output .= $loop;
     }
