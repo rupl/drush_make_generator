@@ -1,6 +1,6 @@
 <?php
 
-// header("Content-type: text/plain");
+ob_start();
 
 include('_lib.php');
 
@@ -11,32 +11,20 @@ print '</pre>';
 exit;
 //*/
 
-
-if ($_GET['token'] != '') {
-  
-  /*
-  $pullSQL = sprintf("SELECT * FROM `makefiles` WHERE token = '%s'; ",$_GET['token']);
-  $pullResult = mysql_query($storeSQL);
-  
-  while ($m = mysql_fetch_assoc($pullResult)) {
-    $version  = $m['version'];
-    $core     = unserialize($m['core']);
-    $contrib  = unserialize($m['contrib']);
-    $libs     = unserialize($m['libs']);
-    $share    = TRUE;
-  }
-  */
-  
+// new or old makefile?
+if (isset($_REQUEST['token']) && sanitize('token',$_REQUEST['token'])) {
+  // old; pass on through
+  $token = $_REQUEST['token'];
 } else {
 
-  // just make this up, aliases can be added later
+  // new; random string, aliases can be added later
   $token = substr(md5(rand(0,1000000000).'drushmake'),4,12);
   
-  $core = $_REQUEST['projects']['core'];
-  $modules = $_REQUEST['projects']['modules'];
-  $themes = $_REQUEST['projects']['themes'];
-  $libs = $_REQUEST['projects']['libs'];
-  $opts = $_REQUEST['projects']['opts'];
+  $core = (isset($_REQUEST['projects']['core'])) ? $_REQUEST['projects']['core'] : FALSE;
+  $modules = (isset($_REQUEST['projects']['modules'])) ? $_REQUEST['projects']['modules'] : FALSE;
+  $themes = (isset($_REQUEST['projects']['themes'])) ? $_REQUEST['projects']['themes'] : FALSE;
+  $libs = (isset($_REQUEST['projects']['libs'])) ? $_REQUEST['projects']['libs'] : FALSE;
+  $opts = (isset($_REQUEST['projects']['opts'])) ? $_REQUEST['projects']['opts'] : FALSE;
   
   $storeSQL = sprintf("INSERT INTO `makefiles` (id,token,version,core,modules,themes,libs,opts) VALUES ('','%s','%s','%s','%s','%s','%s','%s'); ",$token,$version,serialize($core),serialize($modules),serialize($themes),serialize($libs),serialize($opts));
   $storeResult = mysql_query($storeSQL);
@@ -46,8 +34,9 @@ if ($_GET['token'] != '') {
 
 }
 
-
+// redirect
 header("Location: ".fileURL($token));
 
+ob_flush();
 
 ?>

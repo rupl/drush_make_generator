@@ -2,21 +2,16 @@
 
 include('_lib.php');
 
-$token = strip_tags($_REQUEST['token']);
-$pullSQL = sprintf("SELECT * FROM `makefiles` WHERE token = '%s'; ",$token);
-$pullResult = mysql_query($pullSQL);
+// sanitize token and pull makefile from db
+$token = (isset($_REQUEST['token']) && preg_match('/^[a-f0-9]{12}/',$_REQUEST['token'])) ? $_REQUEST['token'] : '';
+$makefile = generateMakefile($token);
 
-while ($m = mysql_fetch_assoc($pullResult)) {
-  $version  = $m['version'];
-  $core     = unserialize($m['core']);
-  $modules  = unserialize($m['modules']);
-  $themes   = unserialize($m['themes']);
-  $libs     = unserialize($m['libs']);
-  $opts     = unserialize($m['opts']);
-  $share    = TRUE;
+if (!$makefile){
+  $fail = 'fail';
+  $error = "Something broke :(\r\n
+Check your URL...\r\n\r\n\r\n
+...or if there's an error onscreen post it at https://github.com/rupl/drush_make_generator/issues - thanks!";
 }
-
-$makefile = makeFile($token,$version,$core,$modules,$themes,$libs,$opts);
 
 ?><!doctype html>  
 
@@ -58,10 +53,15 @@ $makefile = makeFile($token,$version,$core,$modules,$themes,$libs,$opts);
 	</header>
 	
 	<div class="grid_12" id="what">
-		<h2>Your makefile is ready</h2>
-		<p>We've saved it for you as well!</p>
-		<p><a href="<?php print fileURL($token); ?>">Bookmark</a> or (in the future) update at any time.</p>
-		<textarea name="makefile" id="makefile"><?php print $makefile; ?></textarea>
+		<?php if (isset($fail)){ ?>
+  		<h2>Dang it...</h2>
+  		<textarea name="makefile" id="makefile" class="<?php print $fail ?>"><?php print $error; ?></textarea>
+		<?php } else { ?>
+  		<h2>Your makefile is ready</h2>
+  		<p>We've saved it for you as well!</p>
+  		<p><a href="<?php print fileURL($token); ?>">Bookmark</a> or (in the future) update at any time.</p>
+  		<textarea name="makefile" id="makefile"><?php print $makefile; ?></textarea>
+		<?php } ?>
 	</div>
 	
 	<div class="grid_12" id="deploy">
@@ -69,38 +69,7 @@ $makefile = makeFile($token,$version,$core,$modules,$themes,$libs,$opts);
 		<p><a href="http://drupal.org/project/drush">Drush</a> and <a href="http://drupal.org/project/drush_make">Drush Make</a> turn your makefile into a Drupal installation. Then you can get building!</p>
 	</div>
 	
-	<footer class="grid_12">
-		<p>Powered by <a href="http://fourkitchens.com">Four Kitchens</a></p>
-		<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png" /></a>
-	</footer>
-	
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
-	<script>!window.jQuery && document.write(unescape('%3Cscript src="/js/libs/jquery-1.4.4.min.js"%3E%3C/script%3E'))</script>
-	
-	<!-- scripts concatenated and minified via ant build script-->
-		<script src="/js/jquery.formalize.js"></script>
-		<script src="/js/plugins.js"></script>
-		<script src="/js/script.js"></script>
-	<!-- end concatenated and minified scripts-->
-	
-	<!--[if lt IE 7 ]>
-		<script src="/js/libs/dd_belatedpng.js"></script>
-		<script> DD_belatedPNG.fix('img, .png_bg'); </script>
-	<![endif]-->
-
-  <script type="text/javascript">
-  
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-432773-12']);
-    _gaq.push(['_trackPageview']);
-  
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-  
-  </script>
+  <?php include('footer.php'); ?>
 
 </body>
 </html>

@@ -69,7 +69,7 @@ input:invalid, textarea:invalid { border-radius: 1px;  -moz-box-shadow: 0px 0px 
 .no-boxshadow textarea:invalid { background-color: #f0dddd; }
 
 ::-moz-selection{ background: #FF5E99; color:#fff; text-shadow: none; }
-::selection { background:#FF5E99; color:#fff; text-shadow: none; }
+::selection { background:#9ab; color:#fff; text-shadow: 0 2px 1px rgba(0,0,0,0.4); }
 a:link { -webkit-tap-highlight-color: #FF5E99; } 
 
 button {  width: auto; overflow: visible; }
@@ -155,22 +155,25 @@ button {
 	background: -moz-linear-gradient(top,  #faa51a,  #f47a20);
 }
 
-select {opacity: .4; -webkit-transition: opacity .2s linear; }
+select {opacity: .8; -webkit-transition: opacity .2s linear; }
 select:hover {opacity: 1; }
 textarea#makefile {width: 100%; height: 500px; font-family: "Courier New", monospace; }
+textarea#makefile.fail {height: 200px; }
+footer {margin: 0; padding: 0 0 2em .5em; }
+footer p.github {display: block; width: 31px; height: 31px; margin: 0 0 1em 0; padding: 0; text-indent: -9999em; background: #fff url('/img/octocat-31x31.png') no-repeat left top; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; }
+footer p.github a {display: block; width: 31px; height: 31px; }
+footer a[rel=license] {display: block; margin-bottom: 1em; }
+footer a[class~=org] {display: block; width: 31px; height: 31px; background: url('/img/fourkitchens-drushmake-me-logo-31x31.png') no-repeat left top; text-indent: -9999em; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; }
 
-footer {margin: 2em 0; }
-footer p {float: left; }
-footer a[rel=license] {float: right; }
 
 
 
 /* -- Medium size screens (iPad portrait) -- */
 @media (min-width: 481px) {
-	body {padding: 0; }
+	body {}
 	p,ul,ol,dl {margin: 0 0 1em 0; font-size: 1.3em; }
 	legend h3 {font-size: inherit; font-weight: 400; }
-	h4 {width: 40%; float: left; text-align: right; margin: 0 0 0 0; padding: 0 2% 0 0; font-size: 1.4em; vertical-align: bottom; }
+	h4 {width: 40%; float: left; text-align: right; margin: 0 0 0 0; padding: 0 2% 0 0; font-size: 1.4em; position: relative; top: -2px; }
 	label {display: block; margin: 0 0 0 43%; padding: 0 0 .5em 2%; border-left: 1px solid #bbb; }
   label:nth-of-type(3n+1) {/* margin-left: 3%; */}
   label input[type=checkbox] {position: relative; top: -1px; }
@@ -181,7 +184,13 @@ footer a[rel=license] {float: right; }
 
 
 /* -- Large screens (iPad landscape) -- */
-@media all and (min-width: 1023px) {
+@media (min-width: 960px) {
+  body {padding: 0; }
+  footer {position: relative; top: -41px; }
+  footer p.github {float: right; margin-right: 0; }
+  footer p.github a {position: absolute; top: 0; }
+  footer a[rel=license] {float: right; margin-right: 1em; }
+  footer a[class~=org] {float: right; margin-right: 1em; }
 }
 
 /* @import url('import.css') all and (min-width: 767px); */

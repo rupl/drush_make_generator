@@ -5,7 +5,7 @@ include_once('_config.php');
 
 // Die if we can't find config
 if (CONFIG_FILE != 'PRESENT') {
-  print "<h2>Drush Make Generator could not find _config.php</h2><ul><li>Copy _config.example.php to _config.php</li><li>Alter the settings to work for your web host</li></ul>";
+  print "<h2>Drush Make Generator could not find _config.php</h2><ul><li>Copy _config.example.php to _config.php</li><li>Alter the settings to work with your web host and database</li></ul>";
   exit;
 }
 
@@ -13,7 +13,7 @@ if (CONFIG_FILE != 'PRESENT') {
 
 
 /**
- * Fetches contrib projects as a raw DB object
+ * Fetches all contrib projects as a raw DB object
  */
 function fetchContrib() {
   global $version;
@@ -159,187 +159,122 @@ function formThemes(){
   global $version;
   $output = '';
   
-  $groupsSQL = sprintf("SELECT DISTINCT package as groupName FROM `projects` WHERE `type` = 'theme' AND `package` <> '' AND `version` = '%s' AND `status` = 1 ORDER BY package ASC; ",$version);
-  $groups = mysql_query($groupsSQL);
+  $sql = sprintf(
+    "SELECT p.`id`,`unique`,`title`,GROUP_CONCAT(v.release ORDER BY v.release DESC SEPARATOR '%s') as `releases` ".
+    "FROM `projects` AS p ".
+    "LEFT JOIN `versions` AS v ON p.id = v.pid ".
+    "WHERE p.version = '%s' AND `status` = 1 AND p.type = 'theme' ".
+    "GROUP BY p.unique ".
+    "ORDER BY p.unique ASC; ",
+    SQL_SEPARATOR,
+    $version
+    );
+  // $output .= $sql;
+  $projects = mysql_query($sql);
+
+  while($p = mysql_fetch_assoc($projects)):
+    $releases = explode(SQL_SEPARATOR,$p['releases']);
+    
+  	$output .= '
+  				<label for="'. $p['unique'] .'-stable">
+  					<input id="'. $p['unique'] .'-stable" type="checkbox" name="projects[themes]['. $p['unique'] .']" value="stable" /> <span class="title">'.$p['title'].'</span>
+  					<select id="'. $p['unique'].'" name="projects[themes]['. $p['unique'] .']" disabled="disabled">
+  					 <option value="stable">Recommended</option>';
+  				  foreach($releases as $r){
+  				    $output .=' <option value="'. $r .'">Use '. $r .'</option>';
+  				  }
+  				  $output .= '</select>';
+  	$output .= "\r\n\t\t\t\t".'</label>'."\r\n\t\t\t\t";
+    
+  endwhile;
+
+  return $output;
+}
+
+
+/**
+ * Outputs all the external libraries;
+ * Includes a widget to add more
+ */
+function formLibs(){
+  global $version;
+  $output = '';
   
-  while ($group = mysql_fetch_assoc($groups)) {
-  
-    $sql = sprintf(
-      "SELECT p.`id`,`unique`,`title`,GROUP_CONCAT(v.release ORDER BY v.release DESC SEPARATOR '%s') as `releases` ".
-      "FROM `projects` AS p ".
-      "LEFT JOIN `versions` AS v ON p.id = v.pid ".
-      "WHERE p.package = '%s' AND p.version = '%s' AND `status` = 1 AND p.type = 'theme' ".
-      "GROUP BY p.unique ".
-      "ORDER BY p.unique ASC; ",
-      SQL_SEPARATOR,
-      $group['groupName'],$version
-      );
-//    $output .= $sql;
+  $sql = sprintf(
+    "SELECT p.`id`,`unique`,`title`,GROUP_CONCAT(CONCAT(v.release,'~~~',v.url) ORDER BY v.release DESC SEPARATOR '%s') as `releases` ".
+    "FROM `projects` AS p ".
+    "LEFT JOIN `versions` AS v ON p.id = v.pid ".
+    "WHERE `status` = 1 AND p.type = 'lib' ".
+    "GROUP BY p.unique ".
+    "ORDER BY p.unique ASC; ",
+    SQL_SEPARATOR,
+    $version
+    );
+    // $output .= $sql;
     $projects = mysql_query($sql);
-
-    $groupSafe = str_replace(' ','_',strtolower($group['groupName']));
-
-		$output .= "\r\n\t\t\t\t".'<h4>'.$group['groupName'].'</h4>';
 
     while($p = mysql_fetch_assoc($projects)):
       $releases = explode(SQL_SEPARATOR,$p['releases']);
       
+      $latest = explode('~~~',$releases[0]);
     	$output .= '
     				<label for="'. $p['unique'] .'-stable">
-    					<input id="'. $p['unique'] .'-stable" type="checkbox" name="projects[themes]['. $p['unique'] .']" value="stable" /> <span class="title">'.$p['title'].'</span>
-    					<select id="'. $p['unique'].'" name="projects[themes]['. $p['unique'] .']" disabled="disabled">
-    					 <option value="stable">Recommended</option>';
+    					<input id="'. $p['unique'] .'-stable" type="checkbox" name="projects[libs]['. $p['unique'] .']" value="'.$releases[0].'" /> <span class="title">'.$p['title'].'</span>
+    					<select id="'. $p['unique'].'" name="projects[libs]['. $p['unique'] .']" disabled="disabled">
+    					 <option value="'.$latest[1].'">Latest ('.$latest[0].')</option>';
+    				  array_shift($releases);
     				  foreach($releases as $r){
-    				    $output .=' <option value="'. $r .'">Use '. $r .'</option>';
+    				    $info = explode('~~~',$r);
+    				    $output .=' <option value="'. $info[1] .'">Use '. $info[0] .'</option>';
     				  }
     				  $output .= '</select>';
     	$output .= "\r\n\t\t\t\t".'</label>'."\r\n\t\t\t\t";
       
     endwhile;
     
+  return $output;
+}
+
+
+
+
+
+/**
+ * fetch makefile and output
+ */
+function generateMakefile($token){
+  $makefile = '';
+
+  $clean = sanitize('token',$token);
+
+  $pullSQL = sprintf("SELECT * FROM `makefiles` WHERE token = '%s' LIMIT 1; ",$clean);
+  $pullResult = mysql_query($pullSQL);
+  
+  if (mysql_num_rows($pullResult)){
+    while ($m = mysql_fetch_assoc($pullResult)) {
+      $version  = $m['version'];
+      $core     = unserialize($m['core']);
+      $modules  = unserialize($m['modules']);
+      $themes   = unserialize($m['themes']);
+      $libs     = unserialize($m['libs']);
+      $opts     = unserialize($m['opts']);
+      $share    = TRUE;
+      
+      $makefile = makeFile($clean,$version,$core,$modules,$themes,$libs,$opts);
+      return $makefile;
+    }
+  } else {
+    return FALSE;
   }
 
-  return $output;
-}
-
-
-/**
- * Outputs all the libraries plus a widget to add more
- */
-function formLibs(){
-  return '<h4>who are you calling busted, buster?</h4>';
 }
 
 
 
-
 /**
- * Makes core request for makefile
+ * makefile template
  */
-function makeCore($core='drupal',$opts) {
-  global $version;
-  $output = '';
-  
-  // we can branch Pressflow 6/7 later. Cases left below as a reminder.
-  if ($core == 'pressflow'){$version = '';}
-
-  switch($core.$version):
-  
-    case 'pressflow7':
-    case 'pressflow6':
-    case 'pressflow':
-      $output .= '; Use pressflow instead of Drupal core:'."\r\n";
-      $output .= 'projects[pressflow][type] = "core"'."\r\n";
-      $output .= 'projects[pressflow][download][type] = "get"'."\r\n";
-      $output .= 'projects[pressflow][download][url] = "http://files.pressflow.org/pressflow-6-current.tar.gz"'."\r\n";
-      break;
-    
-    case 'drupal7':
-      $output .= '; CVS checkout of Drupal 7.x. Requires the `core` property to be set to 7.x.'."\r\n";
-      $output .= 'projects[drupal][type] = "core"'."\r\n";
-      $output .= 'projects[drupal][download][type] = "cvs"'."\r\n";
-      $output .= 'projects[drupal][download][root] = ":pserver:anonymous:anonymous@cvs.drupal.org:/cvs/drupal"'."\r\n";
-      $output .= 'projects[drupal][download][revision] = "HEAD"'."\r\n";
-      $output .= 'projects[drupal][download][module] = "drupal"'."\r\n";
-      break;
-    
-    case 'drupal6':
-      $output .= '; CVS checkout of Drupal 6.x core:'."\r\n";
-      $output .= 'projects[drupal][type] = "core"'."\r\n";
-      $output .= 'projects[drupal][download][type] = "cvs"'."\r\n";
-      $output .= 'projects[drupal][download][root] = ":pserver:anonymous:anonymous@cvs.drupal.org:/cvs/drupal"'."\r\n";
-      $output .= 'projects[drupal][download][revision] = "DRUPAL-6"'."\r\n";
-      $output .= 'projects[drupal][download][module] = "drupal"'."\r\n";
-      break;
-
-    default:
-      // thought about sliding this under the 'drupal6' case but a proper error seems better
-      $output .= '; No drupal core was selected'."\r\n";
-      
-  endswitch;
-
-  return $output;
-
-}
-
-
-/**
- * Makes project requests for the makefile
- */
-function makeModules($modules='',$opts){
-  global $version;
-  $v = $version;  
-  $subdir = ($opts['contrib_dir']) ? $opts['contrib_dir'] : '';
-  $output = '';
-
-  /* debug
-  $output .= print_r($contrib,true);
-  //*/
-
-  // loop away
-  if ($modules):
-    foreach($modules as $k => $v){
-      $loop = '';
-      
-      if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
-      else {$loop .= 'projects['.$k.'] = '.$v; }
-  
-      $loop .= "\r\n";
-        
-      if ($subdir && $v == 'stable'){$loop = ''; }
-      if ($subdir) {$loop .= 'projects['.$k.'][subdir] = '.$subdir."\r\n"; }
-      
-      $output .= $loop;
-    }
-  endif;
-  
-  return $output;
-}
-
-
-/**
- * Makes project requests for the makefile
- */
-function makeThemes($themes='',$opts){
-  global $version;
-  $v = $version;  
-  $subdir = ($opts['contrib_dir']) ? $opts['contrib_dir'] : '';
-  $output = '';
-
-  /* debug
-  $output .= print_r($themes,true);
-  //*/
-
-  // loop away
-  if ($themes):
-    foreach($themes as $k => $v){
-      $loop = '';
-      
-      if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
-      else {$loop .= 'projects['.$k.'] = '.$v; }
-      
-      $loop .= "\r\n";
-      
-      $output .= $loop;
-    }
-  endif;
-  
-  return $output;
-}
-
-
-/**
- * Makes library requests for the makefile
- */
-function makeLibs($libs='',$opts){
-  // clean water and air
-}
-
-
-/**
- * generate makefile - tha biznass
- */
-function makeFile($token,$version,$core,$modules,$themes,$libs,$opts){
+function makefile($token,$version,$core,$modules,$themes,$libs,$opts){
 
   $makefile = '; $Id$
 ;
@@ -397,6 +332,198 @@ api = 2
 }
 
 
+/**
+ * Makes core request for makefile
+ */
+function makeCore($core='drupal',$opts) {
+  global $version;
+  $output = '';
+  
+  // we can branch Pressflow 6/7 later. Cases left below as a reminder.
+  if ($core == 'pressflow'){$version = '';}
+
+  switch($core.$version):
+  
+    case 'pressflow7':
+    case 'pressflow6':
+    case 'pressflow':
+      $output .= '; Use pressflow instead of Drupal core:'."\r\n";
+      $output .= 'projects[pressflow][type] = "core"'."\r\n";
+      $output .= 'projects[pressflow][download][type] = "get"'."\r\n";
+      $output .= 'projects[pressflow][download][url] = "http://files.pressflow.org/pressflow-6-current.tar.gz"'."\r\n";
+      break;
+    
+    case 'drupal7':
+      $output .= '; CVS checkout of Drupal 7.x. Requires the `core` property to be set to 7.x.'."\r\n";
+      $output .= 'projects[drupal][type] = "core"'."\r\n";
+      $output .= 'projects[drupal][download][type] = "cvs"'."\r\n";
+      $output .= 'projects[drupal][download][root] = ":pserver:anonymous:anonymous@cvs.drupal.org:/cvs/drupal"'."\r\n";
+      $output .= 'projects[drupal][download][revision] = "HEAD"'."\r\n";
+      $output .= 'projects[drupal][download][module] = "drupal"'."\r\n";
+      break;
+    
+    case 'drupal6':
+      $output .= '; CVS checkout of Drupal 6.x core:'."\r\n";
+      $output .= 'projects[drupal][type] = "core"'."\r\n";
+      $output .= 'projects[drupal][download][type] = "cvs"'."\r\n";
+      $output .= 'projects[drupal][download][root] = ":pserver:anonymous:anonymous@cvs.drupal.org:/cvs/drupal"'."\r\n";
+      $output .= 'projects[drupal][download][revision] = "DRUPAL-6"'."\r\n";
+      $output .= 'projects[drupal][download][module] = "drupal"'."\r\n";
+      break;
+
+    default:
+      // thought about sliding this under the 'drupal6' case but a proper error seems better
+      $output .= '; No drupal core was selected'."\r\n";
+      
+  endswitch;
+
+  return $output;
+
+}
+
+
+/**
+ * Makes module requests for the makefile
+ */
+function makeModules($modules=array(),$opts){
+  global $version;
+  $v = $version;  
+  $subdir = ($opts['contrib_dir']) ? $opts['contrib_dir'] : '';
+  $output = '';
+
+  /* debug
+  $output .= print_r($contrib,true);
+  //*/
+
+  // loop away
+  if ($modules):
+    foreach($modules as $k => $v){
+      $loop = '';
+      
+      if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
+      else {$loop .= 'projects['.$k.'] = '.$v; }
+  
+      $loop .= "\r\n";
+        
+      if ($subdir && $v == 'stable'){$loop = ''; }
+      if ($subdir) {$loop .= 'projects['.$k.'][subdir] = '.$subdir."\r\n"; }
+      
+      $output .= $loop;
+    }
+  endif;
+  
+  return $output;
+}
+
+
+/**
+ * Makes theme requests for the makefile
+ */
+function makeThemes($themes=array(),$opts){
+  global $version;
+  $v = $version;  
+  $subdir = ($opts['contrib_dir']) ? $opts['contrib_dir'] : '';
+  $output = '';
+
+  /* debug
+  $output .= print_r($themes,true);
+  //*/
+
+  // loop away
+  if ($themes):
+    foreach($themes as $k => $v){
+      $loop = '';
+      
+      if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
+      else {$loop .= 'projects['.$k.'] = '.$v; }
+      
+      $loop .= "\r\n";
+      
+      $output .= $loop;
+    }
+  endif;
+  
+  return $output;
+}
+
+
+/**
+ * Makes library requests for the makefile
+ */
+function makeLibs($libs=array(),$opts){
+  $output = $loop = '';
+  
+  // loop away
+  if ($libs):
+    foreach($libs as $k => $v){
+      $loop = '';
+      $loop .=
+        'libraries['.$k.'][download][type] = "file"'."\r\n".
+        'libraries['.$k.'][download][url] = "'.$v.'"'."\r\n";      
+
+      $output .= $loop;
+    }
+  endif;
+  
+  if (!$loop){
+    $output .= "; You must add libraries manually. Adding a module will never add the related library automatically.\r\n; https://github.com/rupl/drush_make_generator/issues/closed#issue/1 \r\n";
+  }
+  
+  return $output;
+}
+
+
+/**
+ * Makes a single git request for the makefile, only called by makeXXX functions
+ */
+function makeGit($type='',$git=array(),$opts=array()) {
+  /*
+  $output = $loop = '';
+  
+  
+  switch ($type) {
+    case 'theme':
+      $output .=
+        'projects['.$git[0].'][download][type] = "git"'."\r\n".
+        'projects['.$git[0].'][download][url] = "'.$git[1].'"'."\r\n";
+      break;
+    
+    case 'module':
+      $output .=
+        'projects['.$git[0].'][download][type] = "git"'."\r\n".
+        'projects['.$git[0].'][download][url] = "'.$git[1].'"'."\r\n";
+      break;
+    
+    case 'libs':
+      $output .=
+        'libraries['.$git[0].'][download][type] = "git"'."\r\n".
+        'libraries['.$git[0].'][download][url] = "'.$git[1].'"'."\r\n";
+      break;
+    
+    default:
+      break;
+  }
+  
+  return $output;
+  */
+}
+
+/**
+ * Sanitizes input
+ */
+function sanitize($type='token',$token){
+  switch ($type) {
+    case 'token':
+      $clean = (isset($token) && preg_match('/^[a-f0-9]{12}/',$token)) ? $token : FALSE;
+      break;
+    
+    default:
+      $clean = FALSE;
+      break;
+  }  
+  return $clean;
+}
+
 
 
 /**
@@ -404,16 +531,10 @@ api = 2
  */
 function fileURL($token=''){
 
+  // http://drushmake.me/a/short-url
+
   return '/file.php?token='.$token;
 
-}
-
-
-/**
- * Makes a single git request for the makefile, only called by makeXXX functions
- */
-function _makeGit($git='') {
-  // nutritious food
 }
 
 

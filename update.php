@@ -10,28 +10,25 @@ include('_lib.php');
   $count = 0;
   print "begin...\r\n\r\n";
 
-  // Clear the database of old dev versions.
-  // There's no reason to keep a record of past releases. Drupal's version control does that.
-  // This allows us to stay current in cases where the maintainer removes or promotes a development release.
-  $cleanup = sprintf("DELETE FROM `versions` WHERE timestamp < NOW(); ");
-  // mysql_query($cleanup) or die(mysql_error());
-
-
-
-
-
   // pull projects
   $projects = fetchContrib();
+  /*
+    // debug
+    $psql = sprintf("SELECT * FROM `projects` WHERE `type` = 'module' AND `status` = 1 LIMIT 10; ");
+    $projects = mysql_query($psql);
+  //*/
 
-/*
-  // debug
-  $psql = sprintf("SELECT * FROM `projects` WHERE `type` = 'module' LIMIT 10; ");
-  $projects = mysql_query($psql);
-//*/
+
+
 
   while($p = mysql_fetch_assoc($projects)){
   
     $count++;
+    
+    // delete old versions
+    // There's no reason to keep a record of past releases. Drupal's version control does that.
+    $cleanSQL = sprintf("DELETE FROM `versions` WHERE pid = %d; ",$p['id']);
+    $cleanResult = mysql_query($cleanSQL);
     
     // get some key data out of each module's .info file
     // drush knows what the current recommended versions
@@ -159,8 +156,12 @@ include('_lib.php');
       foreach($releases as $r){
         preg_match('/ '.$version.'\.(.*?) /',$r,$match);
         $dev = trim($match[0]);
-        $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`) VALUES ('',%d,'%s','%s'); ",$p['id'],$version,$dev);
-        mysql_query($sql) or die(mysql_error());
+        if ($dev != ''){
+          $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`) VALUES ('',%d,'%s','%s'); ",$p['id'],$version,$dev);
+          mysql_query($sql) or die(mysql_error());
+        } else {
+          $sql = '-- no version found; ';
+        }
         print '   '.$sql."\r\n";
       }
       print "\r\n";
@@ -202,8 +203,12 @@ include('_lib.php');
       foreach($releases as $r){
         preg_match('/ '.$version.'\.(.*?) /',$r,$match);
         $dev = trim($match[0]);
-        $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`) VALUES ('',%d,'%s','%s'); ",$p['id'],$version,$dev);
-        mysql_query($sql) or die(mysql_error());
+        if ($dev != ''){
+          $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`) VALUES ('',%d,'%s','%s'); ",$p['id'],$version,$dev);
+          mysql_query($sql) or die(mysql_error());
+        } else {
+          $sql = '-- no version found; ';
+        }
         print '   '.$sql."\r\n";
       }
       print "\r\n";
