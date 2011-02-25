@@ -458,21 +458,38 @@ function makeModules($modules=array(),$opts=array()){
   $subdir = ($opts['contrib_dir']) ? $opts['contrib_dir'] : '';
   $output = '';
 
-  // loop away
+  // loop through modules
   if ($modules){
     foreach($modules as $k => $v){
       $loop = '';
 
+      // is this a custom download?
       if (strpos($k,'|') !== FALSE) {
-        $output .= makeDownload('projects',$k,$v,$opts);
+        // yes, it is a download.
+        $unique = str_replace('|','',$k);
+        $loop .= makeDownload('projects',$k,$v,$opts);
+        
+        // include subdir if present
+        if ($subdir && strpos($v['type'],'drupal') !== FALSE) {
+          // erase previous line of output for official d.o downloads. for cleanliness
+          $loop = '';
+          $loop .= 'projects['.$unique.'][subdir] = '.$subdir."\r\n";
+        }
+        elseif ($subdir) {
+          $loop .= 'projects['.$unique.'][subdir] = '.$subdir."\r\n";
+        }
+        
+        $output .= $loop;
       }
+      // no, this is a "standard" module already in the db
       else {
         if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
         elseif($v) {$loop .= 'projects['.$k.'] = '.$v; }
         else {}
     
         $loop .= "\r\n";
-          
+        
+        // if a subdir is present, erase previous line and re-output with subdir. for cleanliness
         if ($subdir && $v == 'stable'){$loop = ''; }
         if ($subdir && $v) {$loop .= 'projects['.$k.'][subdir] = '.$subdir."\r\n"; }
         
@@ -493,7 +510,7 @@ function makeThemes($themes=array(),$opts=array()){
   $v = $version;  
   $output = '';
 
-  // loop away
+  // loop through themes
   if ($themes):
     foreach($themes as $k => $v){
       $loop = '';
@@ -524,10 +541,8 @@ function makeThemes($themes=array(),$opts=array()){
  */
 function makeLibs($libs=array(),$opts=array()){
   $output = $loop = '';
-  
-  // print '<pre>'.print_r($libs,TRUE).'</pre>';
-  
-  // loop away
+    
+  // loop through libraries
   if ($libs):
     foreach($libs as $k => $v){
       $loop = '';
@@ -559,6 +574,8 @@ function makeLibs($libs=array(),$opts=array()){
  */
 function makeDownload($type,$unique,$data,$opts) {
   $output = '';
+  $unique = str_replace('|','',$unique);
+  
   switch ($data['type']) {
     case 'file':
       $output = _downloadFile($type,$unique,$data,$opts);
@@ -588,7 +605,6 @@ function makeDownload($type,$unique,$data,$opts) {
  */
 function _downloadFile($type='',$unique,$data=array(),$opts=array()) {
   $output = '';
-  $unique = str_replace('|','',$unique);
   $output .=
     $type.'['.$unique.'][download][type] = "file"'."\r\n".
     $type.'['.$unique.'][download][url] = "'.$data['url'].'"'."\r\n";
@@ -602,7 +618,6 @@ function _downloadFile($type='',$unique,$data=array(),$opts=array()) {
  */
 function _downloadGit($type='',$unique,$data=array(),$opts=array()) {
   $output = '';
-  $unique = str_replace('|','',$unique);
   $output .=
     $type.'['.$unique.'][download][type] = "git"'."\r\n".
     $type.'['.$unique.'][download][url] = "'.$data['url'].'"'."\r\n";
@@ -616,10 +631,9 @@ function _downloadGit($type='',$unique,$data=array(),$opts=array()) {
  */
 function _downloadDrupal($type='',$unique,$data=array(),$opts=array()) {
   $output = '';
-  $unique = str_replace('|','',$unique);
 
-  if ($unique && $opts['contrib_dir']) {$output .= 'projects['.$unique.'][subdir] = '.$opts['contrib_dir']; }
-  elseif($unique) {$output .= 'projects[] = '.$unique; }
+  // if ($unique && $opts['contrib_dir']) {$output .= 'projects['.$unique.'][subdir] = '.$opts['contrib_dir']; }
+  if ($unique) {$output .= 'projects[] = '.$unique; }
   else {$output .= '; ERROR: _downloadDrupal could not properly build a request for "'.$unique.'"'; }
 
   $output .= "\r\n";
@@ -633,7 +647,6 @@ function _downloadDrupal($type='',$unique,$data=array(),$opts=array()) {
  */
 function _downloadCvs($type='',$unique,$data=array(),$opts=array()) {
   $output = '';
-  $unique = str_replace('|','',$unique);
   $output .=
     'projects['.$unique.'][type] = '.$data['maketype']."\r\n".
     'projects['.$unique.'][download][type] = "cvs"'."\r\n".
