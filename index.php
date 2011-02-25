@@ -80,11 +80,21 @@ include('_lib.php');
       
       <fieldset id="fs-opts">
         <legend>Options</legend>
-        <h4>Put modules in </h4>
+        <h4>Put modules in: </h4>
         <label for="o-contribdir">
           /sites/all/modules/
-          <input id="o-contribdir" type="text" name="projects[opts][contrib_dir]" value="<?= CONTRIB_DIR ?>" />
+          <input id="o-contribdir" type="text" name="makefile[opts][contrib_dir]" value="<?= CONTRIB_DIR ?>" />
         </label>
+        <!-- h4>To ease setup: </h4>
+        <label for="o-prep">
+          include <a href="https://github.com/rupl/drush_make_generator/raw/master/prep.sh" target="_blank">prep.sh</a>&nbsp;
+          <input id="o-prep" type="checkbox" name="makefile[opts][prep]" value="include" />
+        </label>
+        <h4>Short URL:</h4>
+        <label for="o-short">
+          http://drushmake.me/a/
+          <input id="o-prep" type="text" name="makefile[opts][short]" value="" />
+        </label -->
       </fieldset>
       
 			<button type="submit">Generate makefile</button>

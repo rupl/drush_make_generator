@@ -3,7 +3,7 @@
 include('_lib.php');
 
 // sanitize token and pull makefile from db
-$token = (isset($_REQUEST['token']) && preg_match('/^[a-f0-9]{12}/',$_REQUEST['token'])) ? $_REQUEST['token'] : '';
+$token = (isset($_REQUEST['token']) && sanitize('token',$_REQUEST['token'])) ? $_REQUEST['token'] : '';
 $makefile = generateMakefile($token);
 
 if (!$makefile){

@@ -19,16 +19,38 @@ if (isset($_REQUEST['token']) && sanitize('token',$_REQUEST['token'])) {
 
   // new; random string, aliases can be added later
   $token = substr(md5(rand(0,1000000000).'drushmake'),4,12);
+
+  // get rid of any unused URL widgets
+  if (isset($_REQUEST['makefile']['modules']['|THIS|'])) {unset($_REQUEST['makefile']['modules']['|THIS|']); }
+  if (isset($_REQUEST['makefile']['themes']['|THIS|'])) {unset($_REQUEST['makefile']['themes']['|THIS|']); }
+  if (isset($_REQUEST['makefile']['libs']['|THIS|'])) {unset($_REQUEST['makefile']['libs']['|THIS|']); }
   
-  $core = (isset($_REQUEST['projects']['core'])) ? $_REQUEST['projects']['core'] : FALSE;
-  $modules = (isset($_REQUEST['projects']['modules'])) ? $_REQUEST['projects']['modules'] : FALSE;
-  $themes = (isset($_REQUEST['projects']['themes'])) ? $_REQUEST['projects']['themes'] : FALSE;
-  $libs = (isset($_REQUEST['projects']['libs'])) ? $_REQUEST['projects']['libs'] : FALSE;
-  $opts = (isset($_REQUEST['projects']['opts'])) ? $_REQUEST['projects']['opts'] : FALSE;
-  
-  $storeSQL = sprintf("INSERT INTO `makefiles` (id,token,version,core,modules,themes,libs,opts) VALUES ('','%s','%s','%s','%s','%s','%s','%s'); ",$token,$version,serialize($core),serialize($modules),serialize($themes),serialize($libs),serialize($opts));
+  // escape and flatten data
+  $core = (isset($_REQUEST['makefile']['core']))          ? mysql_real_escape_string(serialize($_REQUEST['makefile']['core']))      : FALSE;
+  $modules = (isset($_REQUEST['makefile']['modules']))    ? mysql_real_escape_string(serialize($_REQUEST['makefile']['modules']))   : FALSE;
+  $themes = (isset($_REQUEST['makefile']['themes']))      ? mysql_real_escape_string(serialize($_REQUEST['makefile']['themes']))    : FALSE;
+  $libs = (isset($_REQUEST['makefile']['libs']))          ? mysql_real_escape_string(serialize($_REQUEST['makefile']['libs']))      : FALSE;
+  $opts = (isset($_REQUEST['makefile']['opts']))          ? mysql_real_escape_string(serialize($_REQUEST['makefile']['opts']))      : FALSE;
+  //$includes = (isset($_REQUEST['makefile']['includes']))? serialize(rmvThis($_REQUEST['makefile']['includes']))  : FALSE;
+
+
+/* debug
+print '<pre>'."\r\n";
+print $core."\r\n";
+print $modules."\r\n";
+print $themes."\r\n";
+print $libs."\r\n";
+print $opts."\r\n";
+print '</pre>'."\r\n";
+exit;
+//*/
+
+
+  // store in db
+  $storeSQL = sprintf("INSERT INTO `makefiles` (id,token,version,core,modules,themes,libs,opts) VALUES ('','%s','%s','%s','%s','%s','%s','%s'); ",$token,$version,$core,$modules,$themes,$libs,$opts);
   $storeResult = mysql_query($storeSQL);
-  
+
+  // sharing.. later
   if ($storeResult) {$share = TRUE; }
   else {$share = FALSE; }
 

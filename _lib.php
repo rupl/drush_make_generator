@@ -70,8 +70,8 @@ function formCores(){
   while($c = mysql_fetch_assoc($cores)):
   	$output .= '
   				<label for="'. $c['unique'] .'-stable">
-  					<input id="'. $c['unique'] .'-stable" type="radio" name="projects[core]" value="'. $c['unique'] .'" /> <span class="title">'.$c['title'].'</span>
-  					<!-- span class="dev"><input id="'. $c['unique'] .'-dev" type="radio" name="projects[core]" value="'. $c['unique'] .'dev" /> Use dev branch</span -->
+  					<input id="'. $c['unique'] .'-stable" type="radio" name="makefile[core]" value="'. $c['unique'] .'" /> <span class="title">'.$c['title'].'</span>
+  					<!-- span class="dev"><input id="'. $c['unique'] .'-dev" type="radio" name="makefile[core]" value="'. $c['unique'] .'dev" /> Use dev branch</span -->
   				</label>'."\r\n";
   endwhile;
   
@@ -111,29 +111,16 @@ function formModules(){
 		$output .= "\r\n\t\t\t\t".'<h4>'.$group['groupName'].'</h4>';
 
     while($p = mysql_fetch_assoc($projects)):
-      if ($p['releases'] != ''){
+      if (isset($p['releases'])){
         $releases = explode(SQL_SEPARATOR,$p['releases']);
       } else {
         $releases = FALSE;
       }
     	
-    	/*
-    	// radio button approach
     	$output .= '
     				<label for="'. $p['unique'] .'-stable">
-    					<input id="'. $p['unique'] .'-stable" type="radio" name="projects[contrib]['. $p['unique'] .']" value="stable" /> <span class="title">'.$p['title'].'</span>';
-    				  foreach($releases as $r){
-    				    $output .=' <span class="dev"><input id="'. $p['unique'].'_'.$r .'" type="radio" name="projects[contrib]['. $p['unique'] .']" value="'. $r .'" /> Use '. $r .'</span>';
-    				  }
-    	$output .= '</label>';
-    	//*/
-      
-      //*
-      // drop-down approach, not fully baked but this code renders correctly
-    	$output .= '
-    				<label for="'. $p['unique'] .'-stable">
-    					<input id="'. $p['unique'] .'-stable" type="checkbox" name="projects[modules]['. $p['unique'] .']" value="stable" /> <span class="title">'.$p['title'].'</span>
-    					<select id="'. $p['unique'].'" name="projects[modules]['. $p['unique'] .']" disabled="disabled">
+    					<input id="'. $p['unique'] .'-stable" type="checkbox" name="makefile[modules]['. $p['unique'] .']" value="stable" /> <span class="title">'.$p['title'].'</span>
+    					<select id="'. $p['unique'].'" name="makefile[modules]['. $p['unique'] .']" disabled="disabled">
     					 <option value="stable">Recommended</option>';
               if ($releases){
       				  foreach($releases as $r){
@@ -142,11 +129,15 @@ function formModules(){
       				}
     				  $output .= '</select>';
     	$output .= "\r\n\t\t\t\t".'</label>'."\r\n\t\t\t\t";
-      //*/
       
     endwhile;
     
   }
+
+  $output .= '<div class="modules downloads">';
+  $output .= formDownload('modules',array('url'=>'#url','unique'=>'module'));
+  $output .= '</div>';
+  $output .= formDownload('add');
 
   return $output;
 }
@@ -177,8 +168,8 @@ function formThemes(){
     
   	$output .= '
   				<label for="'. $p['unique'] .'-stable">
-  					<input id="'. $p['unique'] .'-stable" type="checkbox" name="projects[themes]['. $p['unique'] .']" value="stable" /> <span class="title">'.$p['title'].'</span>
-  					<select id="'. $p['unique'].'" name="projects[themes]['. $p['unique'] .']" disabled="disabled">
+  					<input id="'. $p['unique'] .'-stable" type="checkbox" name="makefile[themes]['. $p['unique'] .']" value="stable" /> <span class="title">'.$p['title'].'</span>
+  					<select id="'. $p['unique'].'" name="makefile[themes]['. $p['unique'] .']" disabled="disabled">
   					 <option value="stable">Recommended</option>';
   				  foreach($releases as $r){
   				    $output .=' <option value="'. $r .'">Use '. $r .'</option>';
@@ -187,6 +178,11 @@ function formThemes(){
   	$output .= "\r\n\t\t\t\t".'</label>'."\r\n\t\t\t\t";
     
   endwhile;
+  
+  $output .= '<div class="themes downloads">';
+  $output .= formDownload('themes',array('url'=>'#url','unique'=>'theme'));
+  $output .= '</div>';
+  $output .= formDownload('add');
 
   return $output;
 }
@@ -210,33 +206,101 @@ function formLibs(){
     SQL_SEPARATOR,
     $version
     );
-    // $output .= $sql;
-    $projects = mysql_query($sql);
+  $projects = mysql_query($sql);
 
-    while($p = mysql_fetch_assoc($projects)):
-      $releases = explode(SQL_SEPARATOR,$p['releases']);
-      
-      $latest = explode('~~~',$releases[0]);
-    	$output .= '
-    				<label for="'. $p['unique'] .'-stable">
-    					<input id="'. $p['unique'] .'-stable" type="checkbox" name="projects[libs]['. $p['unique'] .']" value="'.$releases[0].'" /> <span class="title">'.$p['title'].'</span>
-    					<select id="'. $p['unique'].'" name="projects[libs]['. $p['unique'] .']" disabled="disabled">
-    					 <option value="'.$latest[1].'">Latest ('.$latest[0].')</option>';
-    				  array_shift($releases);
-    				  foreach($releases as $r){
-    				    $info = explode('~~~',$r);
-    				    $output .=' <option value="'. $info[1] .'">Use '. $info[0] .'</option>';
-    				  }
-    				  $output .= '</select>';
-    	$output .= "\r\n\t\t\t\t".'</label>'."\r\n\t\t\t\t";
-      
-    endwhile;
+  while($p = mysql_fetch_assoc($projects)):
+    $releases = explode(SQL_SEPARATOR,$p['releases']);
+    
+    $latest = explode('~~~',$releases[0]);
+  	$output .= '
+  				<label for="'. $p['unique'] .'-stable">
+  					<input id="'. $p['unique'] .'-stable" type="checkbox" name="makefile[libs]['. $p['unique'] .']" value="'.$latest[1].'" /> <span class="title">'.$p['title'].'</span>
+  					<select id="'. $p['unique'].'" name="makefile[libs]['. $p['unique'] .']" disabled="disabled">
+  					 <option value="'.$latest[1].'">Latest ('.$latest[0].')</option>';
+  				  
+  				  array_shift($releases);
+  				  
+  				  foreach($releases as $r){
+  				    $info = explode('~~~',$r);
+  				    $output .=' <option value="'. $info[1] .'">Use '. $info[0] .'</option>';
+  				  }
+  				  $output .= '</select>';
+  	$output .= "\r\n\t\t\t\t".'</label>'."\r\n\t\t\t\t";
+    
+  endwhile;
+  
+  $output .= '<div class="libraries downloads">';
+  $output .= formDownload('libraries',array('url'=>'#url','unique'=>'library'));
+  $output .= '</div>';
+  $output .= formDownload('add');
     
   return $output;
 }
 
 
 
+
+/**
+ * Outputs a single form element for a download. Either empty or populated.
+ */
+function formDownload($type='libraries',$download=array()){
+  $output = '';
+  
+  if (empty($download['unique'])) {$download['unique'] = '[project]'; }
+  if (empty($download['url'])) {$download['url'] = '#url'; }
+
+  switch ($type) {
+  
+    case 'libraries':
+      $output .= '<div class="download label">';
+        $output .= '<input type="text" class="unique" name="makefile[libs][|THIS|][unique]" value="'.$download['unique'].'" /> ';
+        $output .= '<select name="makefile[libs][|THIS|][type]" class="type"><option value="file">www</option><option value="git">git</option></select>';
+        $output .= '<input type="text" class="url" name="makefile[libs][|THIS|][url]" value="'.$download['url'].'" />';
+        $output .= '<input type="hidden" class="url" name="makefile[libs][|THIS|][maketype]" value="libraries" />';
+        $output .= '<a class="remove">remove</a>';
+      $output .= '</div>';
+      break;
+
+    case 'modules':
+      $output .= '<div class="download label">';
+        $output .= '<input type="text" class="unique" name="makefile[modules][|THIS|][unique]" value="'.$download['unique'].'" /> ';
+        $output .= '<select name="makefile[modules][|THIS|][type]" class="type"><option value="drupal">d.o</option><option value="file">www</option><option value="git">git</option></select>';
+        $output .= '<input type="text" class="url" name="makefile[modules][|THIS|][url]" value="'.$download['url'].'" disabled="disabled" />';
+        $output .= '<input type="hidden" class="url" name="makefile[includes][|THIS|][maketype]" value="module" />'; // module, not "modules"
+        $output .= '<a class="remove">remove</a>';
+      $output .= '</div>';
+      break;
+    
+    case 'themes':
+      $output .= '<div class="download label">';
+        $output .= '<input type="text" class="unique" name="makefile[themes][|THIS|][unique]" value="'.$download['unique'].'" /> ';
+        $output .= '<select name="makefile[themes][|THIS|][type]" class="type"><option value="drupal">d.o</option><option value="file">www</option><option value="git">git</option></select>';
+        $output .= '<input type="text" class="url" name="makefile[themes][|THIS|][url]" value="'.$download['url'].'" disabled="disabled" />';
+        $output .= '<input type="hidden" class="url" name="makefile[includes][|THIS|][maketype]" value="theme" />'; // theme, not "themes"
+        $output .= '<a class="remove">remove</a>';
+      $output .= '</div>';
+      break;
+    
+    case 'includes':
+      $output .= '<div class="download label">';
+        $output .= '<input type="text" class="unique" name="makefile[includes][|THIS|][unique]" value="'.$download['unique'].'" /> ';
+        $output .= '<select name="makefile[includes][|THIS|][type]" class="type"><option value="drupal">d.o</option><option value="file">www</option><option value="git">git</option></select>';
+        $output .= '<input type="text" class="url" name="makefile[includes][|THIS|][url]" value="'.$download['url'].'" disabled="disabled" />';
+        $output .= '<input type="hidden" class="url" name="makefile[includes][|THIS|][maketype]" value="includes" />';
+        $output .= '<a class="remove">remove</a>';
+      $output .= '</div>';
+      break;
+    
+    case 'add':
+      $output .= '<a class="another">Add Another</a>';
+      break;
+    
+    default:
+      break;
+  }
+
+  return $output;
+}
 
 
 /**
@@ -247,11 +311,10 @@ function generateMakefile($token){
 
   $clean = sanitize('token',$token);
 
-  $pullSQL = sprintf("SELECT * FROM `makefiles` WHERE token = '%s' LIMIT 1; ",$clean);
-  $pullResult = mysql_query($pullSQL);
+  $sql = sprintf("SELECT * FROM `makefiles` WHERE token = '%s' LIMIT 1; ",$clean);
+  $result = mysql_query($sql);
   
-  if (mysql_num_rows($pullResult)){
-    while ($m = mysql_fetch_assoc($pullResult)) {
+  if ($m = mysql_fetch_assoc($result)){
       $version  = $m['version'];
       $core     = unserialize($m['core']);
       $modules  = unserialize($m['modules']);
@@ -262,7 +325,6 @@ function generateMakefile($token){
       
       $makefile = makeFile($clean,$version,$core,$modules,$themes,$libs,$opts);
       return $makefile;
-    }
   } else {
     return FALSE;
   }
@@ -339,15 +401,20 @@ function makeCore($core='drupal',$opts) {
   global $version;
   $output = '';
   
-  // we can branch Pressflow 6/7 later. Cases left below as a reminder.
-  if ($core == 'pressflow'){$version = '';}
-
   switch($core.$version):
-  
+
+    case 'openatrium6':
+    case 'openatrium':
+      $output .= '; Use Open Atrium instead of Drupal core:'."\r\n";
+      $output .= 'projects[openatrium][type] = "core"'."\r\n";
+      $output .= 'projects[openatrium][download][type] = "get"'."\r\n";
+      $output .= 'projects[openatrium][download][url] = "http://openatrium.com/sites/openatrium.com/files/atrium_releases/atrium-1-0-beta9.tgz"'."\r\n";
+      break;
+
     case 'pressflow7':
     case 'pressflow6':
     case 'pressflow':
-      $output .= '; Use pressflow instead of Drupal core:'."\r\n";
+      $output .= '; Use Pressflow instead of Drupal core:'."\r\n";
       $output .= 'projects[pressflow][type] = "core"'."\r\n";
       $output .= 'projects[pressflow][download][type] = "get"'."\r\n";
       $output .= 'projects[pressflow][download][url] = "http://files.pressflow.org/pressflow-6-current.tar.gz"'."\r\n";
@@ -385,32 +452,34 @@ function makeCore($core='drupal',$opts) {
 /**
  * Makes module requests for the makefile
  */
-function makeModules($modules=array(),$opts){
+function makeModules($modules=array(),$opts=array()){
   global $version;
   $v = $version;  
   $subdir = ($opts['contrib_dir']) ? $opts['contrib_dir'] : '';
   $output = '';
 
-  /* debug
-  $output .= print_r($contrib,true);
-  //*/
-
   // loop away
-  if ($modules):
+  if ($modules){
     foreach($modules as $k => $v){
       $loop = '';
-      
-      if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
-      else {$loop .= 'projects['.$k.'] = '.$v; }
-  
-      $loop .= "\r\n";
+
+      if (strpos($k,'|') !== FALSE) {
+        $output .= makeDownload('projects',$k,$v,$opts);
+      }
+      else {
+        if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
+        elseif($v) {$loop .= 'projects['.$k.'] = '.$v; }
+        else {}
+    
+        $loop .= "\r\n";
+          
+        if ($subdir && $v == 'stable'){$loop = ''; }
+        if ($subdir && $v) {$loop .= 'projects['.$k.'][subdir] = '.$subdir."\r\n"; }
         
-      if ($subdir && $v == 'stable'){$loop = ''; }
-      if ($subdir) {$loop .= 'projects['.$k.'][subdir] = '.$subdir."\r\n"; }
-      
-      $output .= $loop;
+        $output .= $loop;        
+      }
     }
-  endif;
+  }
   
   return $output;
 }
@@ -419,27 +488,30 @@ function makeModules($modules=array(),$opts){
 /**
  * Makes theme requests for the makefile
  */
-function makeThemes($themes=array(),$opts){
+function makeThemes($themes=array(),$opts=array()){
   global $version;
   $v = $version;  
-  $subdir = ($opts['contrib_dir']) ? $opts['contrib_dir'] : '';
   $output = '';
-
-  /* debug
-  $output .= print_r($themes,true);
-  //*/
 
   // loop away
   if ($themes):
     foreach($themes as $k => $v){
       $loop = '';
-      
-      if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
-      else {$loop .= 'projects['.$k.'] = '.$v; }
-      
-      $loop .= "\r\n";
-      
-      $output .= $loop;
+
+      // unset the directory because the _downloadXXX functions are not yet smart enough to ignore contrib_dir for themes/libraries
+      unset($opts['contrib_dir']);
+
+      if (strpos($k,'|') !== FALSE) {
+        $output .= makeDownload('projects',$k,$v,$opts);
+      }
+      else {
+        if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
+        else {$loop .= 'projects['.$k.'] = '.$v; }
+        
+        $loop .= "\r\n";
+        
+        $output .= $loop;
+      }
     }
   endif;
   
@@ -450,25 +522,32 @@ function makeThemes($themes=array(),$opts){
 /**
  * Makes library requests for the makefile
  */
-function makeLibs($libs=array(),$opts){
+function makeLibs($libs=array(),$opts=array()){
   $output = $loop = '';
+  
+  // print '<pre>'.print_r($libs,TRUE).'</pre>';
   
   // loop away
   if ($libs):
     foreach($libs as $k => $v){
-      $release = explode('~~~',$v);
-      
       $loop = '';
-      $loop .=
-        'libraries['.$k.'][download][type] = "file"'."\r\n".
-        'libraries['.$k.'][download][url] = "'.$release[0].'"'."\r\n";      
-
-      $output .= $loop;
+      
+      if (strpos($k,'|') !== FALSE) {
+        $loop .= makeDownload('libraries',$k,$v,$opts);
+        $output .= $loop;
+      }
+      else {        
+        $loop .=
+          'libraries['.$k.'][download][type] = "file"'."\r\n".
+          'libraries['.$k.'][download][url] = "'.$v.'"'."\r\n";      
+  
+        $output .= $loop;
+      }
     }
   endif;
   
   if (!$loop){
-    $output .= "; You must add libraries manually. Adding a module will never add the related library automatically.\r\n; https://github.com/rupl/drush_make_generator/issues/closed#issue/1 \r\n";
+    $output .= "; Adding a module such as jquery_update will never add the related library automatically.\r\n; https://github.com/rupl/drush_make_generator/issues/closed#issue/1 \r\n";
   }
   
   return $output;
@@ -476,56 +555,114 @@ function makeLibs($libs=array(),$opts){
 
 
 /**
- * Makes a single git request for the makefile, only called by makeXXX functions
+ * Delegates downloads
  */
-function makeGit($type='',$git=array(),$opts=array()) {
-  /*
-  $output = $loop = '';
-  
-  
-  switch ($type) {
-    case 'theme':
-      $output .=
-        'projects['.$git[0].'][download][type] = "git"'."\r\n".
-        'projects['.$git[0].'][download][url] = "'.$git[1].'"'."\r\n";
+function makeDownload($type,$unique,$data,$opts) {
+  $output = '';
+  switch ($data['type']) {
+    case 'file':
+      $output = _downloadFile($type,$unique,$data,$opts);
       break;
     
-    case 'module':
-      $output .=
-        'projects['.$git[0].'][download][type] = "git"'."\r\n".
-        'projects['.$git[0].'][download][url] = "'.$git[1].'"'."\r\n";
+    case 'git':
+      $output = _downloadGit($type,$unique,$data,$opts);
       break;
-    
-    case 'libs':
-      $output .=
-        'libraries['.$git[0].'][download][type] = "git"'."\r\n".
-        'libraries['.$git[0].'][download][url] = "'.$git[1].'"'."\r\n";
+
+    case 'drupal':
+      $output = _downloadDrupal($type,$unique,$data,$opts);
       break;
-    
+
+    // SCREW CVS VIVA LA GIT!!
+
     default:
       break;
-  }
   
+  }
   return $output;
-  */
 }
+
+
+
+/**
+ * Makes a single http request within the makefile, only called by makeDownload()
+ */
+function _downloadFile($type='',$unique,$data=array(),$opts=array()) {
+  $output = '';
+  $unique = str_replace('|','',$unique);
+  $output .=
+    $type.'['.$unique.'][download][type] = "file"'."\r\n".
+    $type.'['.$unique.'][download][url] = "'.$data['url'].'"'."\r\n";
+
+  return $output;
+}
+
+
+/**
+ * Makes a single git request within the makefile, only called by makeDownload()
+ */
+function _downloadGit($type='',$unique,$data=array(),$opts=array()) {
+  $output = '';
+  $unique = str_replace('|','',$unique);
+  $output .=
+    $type.'['.$unique.'][download][type] = "git"'."\r\n".
+    $type.'['.$unique.'][download][url] = "'.$data['url'].'"'."\r\n";
+
+  return $output;
+}
+
+
+/**
+ * Makes a single Drupal request within the makefile, only called by makeDownload()
+ */
+function _downloadDrupal($type='',$unique,$data=array(),$opts=array()) {
+  $output = '';
+  $unique = str_replace('|','',$unique);
+
+  if ($unique && $opts['contrib_dir']) {$output .= 'projects['.$unique.'][subdir] = '.$opts['contrib_dir']; }
+  elseif($unique) {$output .= 'projects[] = '.$unique; }
+  else {$output .= '; ERROR: _downloadDrupal could not properly build a request for "'.$unique.'"'; }
+
+  $output .= "\r\n";
+
+  return $output;
+}
+
+
+/**
+ * Makes a single CVS request for the makefile, only called by makeDownload()
+ */
+function _downloadCvs($type='',$unique,$data=array(),$opts=array()) {
+  $output = '';
+  $unique = str_replace('|','',$unique);
+  $output .=
+    'projects['.$unique.'][type] = '.$data['maketype']."\r\n".
+    'projects['.$unique.'][download][type] = "cvs"'."\r\n".
+    'projects['.$unique.'][download][url] = "'.$unique.'"'."\r\n";
+
+  return $output;
+}
+
+
+
+
 
 /**
  * Sanitizes input
  */
-function sanitize($type='token',$token){
+function sanitize($type='token',$data){
   switch ($type) {
     case 'token':
-      $clean = (isset($token) && preg_match('/^[a-f0-9]{12}/',$token)) ? $token : FALSE;
+      // only accept 12 chars made of a-f and 0-9
+      $clean = (isset($data) && preg_match('/^[a-f0-9]{12}/',$data)) ? $data : FALSE;
       break;
     
     default:
       $clean = FALSE;
       break;
-  }  
+  }
+  
   return $clean;
 }
-
 
 
 /**
@@ -541,12 +678,3 @@ function fileURL($token=''){
 
 
 
-/**
- * Makes a single CVS request for the makefile, only called by makeXXX functions
- */
-function _makeCvs($cvs='') {
-  // breakdance
-}
-
-
-?>

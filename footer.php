@@ -5,7 +5,7 @@
 	</footer>
 	
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
-	<script>!window.jQuery && document.write(unescape('%3Cscript src="/js/libs/jquery-1.4.4.min.js"%3E%3C/script%3E'))</script>
+	<script>!window.jQuery && document.write(unescape('%3Cscript src="/js/libs/jquery-1.4.2.min.js"%3E%3C/script%3E'))</script>
 	
 	<!-- scripts concatenated and minified via ant build script-->
 		<script src="/js/jquery.formalize.js"></script>
@@ -23,7 +23,7 @@
   <script type="text/javascript">
   
     var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', '<?php print ANALYTICS_ACCOUNT ?>']);
+    _gaq.push(['_setAccount', '<?php print ANALYTICS_ACCOUNT; ?>']);
     _gaq.push(['_trackPageview']);
   
     (function() {
