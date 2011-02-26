@@ -266,7 +266,7 @@ function formDownload($type='libraries',$download=array()){
         $output .= '<input type="text" class="unique" name="makefile[modules][|THIS|][unique]" value="'.$download['unique'].'" /> ';
         $output .= '<select name="makefile[modules][|THIS|][type]" class="type"><option value="drupal">d.o</option><option value="file">www</option><option value="git">git</option></select>';
         $output .= '<input type="text" class="url" name="makefile[modules][|THIS|][url]" value="'.$download['url'].'" disabled="disabled" />';
-        $output .= '<input type="hidden" class="url" name="makefile[includes][|THIS|][maketype]" value="module" />'; // module, not "modules"
+        $output .= '<input type="hidden" class="url" name="makefile[modules][|THIS|][maketype]" value="module" />'; // module, not "modules"
         $output .= '<a class="remove">remove</a>';
       $output .= '</div>';
       break;
@@ -276,7 +276,7 @@ function formDownload($type='libraries',$download=array()){
         $output .= '<input type="text" class="unique" name="makefile[themes][|THIS|][unique]" value="'.$download['unique'].'" /> ';
         $output .= '<select name="makefile[themes][|THIS|][type]" class="type"><option value="drupal">d.o</option><option value="file">www</option><option value="git">git</option></select>';
         $output .= '<input type="text" class="url" name="makefile[themes][|THIS|][url]" value="'.$download['url'].'" disabled="disabled" />';
-        $output .= '<input type="hidden" class="url" name="makefile[includes][|THIS|][maketype]" value="theme" />'; // theme, not "themes"
+        $output .= '<input type="hidden" class="url" name="makefile[themes][|THIS|][maketype]" value="theme" />'; // theme, not "themes"
         $output .= '<a class="remove">remove</a>';
       $output .= '</div>';
       break;
@@ -606,6 +606,7 @@ function makeDownload($type,$unique,$data,$opts) {
 function _downloadFile($type='',$unique,$data=array(),$opts=array()) {
   $output = '';
   $output .=
+    $type.'['.$unique.'][type] = "'.$data['maketype'].'"'."\r\n".
     $type.'['.$unique.'][download][type] = "file"'."\r\n".
     $type.'['.$unique.'][download][url] = "'.$data['url'].'"'."\r\n";
 
@@ -619,6 +620,7 @@ function _downloadFile($type='',$unique,$data=array(),$opts=array()) {
 function _downloadGit($type='',$unique,$data=array(),$opts=array()) {
   $output = '';
   $output .=
+    $type.'['.$unique.'][type] = "'.$data['maketype'].'"'."\r\n".
     $type.'['.$unique.'][download][type] = "git"'."\r\n".
     $type.'['.$unique.'][download][url] = "'.$data['url'].'"'."\r\n";
 
@@ -632,7 +634,7 @@ function _downloadGit($type='',$unique,$data=array(),$opts=array()) {
 function _downloadDrupal($type='',$unique,$data=array(),$opts=array()) {
   $output = '';
 
-  // if ($unique && $opts['contrib_dir']) {$output .= 'projects['.$unique.'][subdir] = '.$opts['contrib_dir']; }
+  // if ($unique && $data['url']) {$output .= 'projects['.$unique.'] = '.$url; } // we're using $url for the module version. example: 6.x-2.0
   if ($unique) {$output .= 'projects[] = '.$unique; }
   else {$output .= '; ERROR: _downloadDrupal could not properly build a request for "'.$unique.'"'; }
 
