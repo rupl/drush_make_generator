@@ -31,7 +31,7 @@ include('_lib.php');
     $cleanResult = mysql_query($cleanSQL);
     
     // get some key data out of each module's .info file
-    // drush knows what the current recommended versions
+    // drush knows the current recommended versions
     
     // fetching recommended version information
     $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Recommended'";
@@ -40,97 +40,92 @@ include('_lib.php');
     // debug 
     print "\r\ncmd:\r\n   ".$cmd."\r\n\r\nresult:\r\n   ".$result."\r\n";
 
-    // pull stable version nubmer    
-    preg_match('/ '.$version.'\.x-(\d{1}\.\d*)/',$result,$recVersion);
-    $stableVersion = 'DRUPAL-'.$version.'--'.str_replace('.','-',$recVersion[1]);
-    preg_match('/DRUPAL-'.$version.'--\d{1}/',$stableVersion,$shortVersion);
+    // release string; this catches a space on each side to ensure any releases like 6.x-6.0 or 7.x-7.0 get fully captured
+    preg_match('/ '.$version.'\.x-(\d{1}\.\d*(-[a-zA-Z0-9]*)? )/',$result,$recVersion);
 
-    // debug
-    print "debug:\r\n   Recommended Version: ".$recVersion[0]."| DRUPAL-".$version."--".$recVersion[1]."\r\n\r\n";
+    // GIT WITH THE PROGRAMME
     
-    // fetch the latest stable release
-    // modules
-    $url1 = 'http://drupalcode.org/viewvc/drupal/contributions/modules/'.$p['unique'].'/'.$p['unique'].'.info?view=co&pathrev='.$stableVersion;
-    $url2 = 'http://drupalcode.org/viewvc/drupal/contributions/modules/'.$p['unique'].'/'.$p['unique'].'.info?view=co&pathrev='.$shortVersion[0];
-    // themes
-    $url3 = 'http://drupalcode.org/viewvc/drupal/contributions/themes/'.$p['unique'].'/'.$p['unique'].'.info?view=co&pathrev='.$stableVersion;
-    $url4 = 'http://drupalcode.org/viewvc/drupal/contributions/themes/'.$p['unique'].'/'.$p['unique'].'.info?view=co&pathrev='.$shortVersion[0];
+    // build URL, removing space from the release string we captured just now
+    $url = 'http://drupalcode.org/project/'.$p['unique'].'.git/blob_plain/refs/tags/'.trim($recVersion[0]).':/'.$p['unique'].'.info';
+    print "\r\n".'url: '.$url."\r\n\r\n";
 
-    print "urls:\r\n";
-    print '   '.$url1."\r\n";
-    print '   '.$url2."\r\n\r\n";
-    print '   '.$url3."\r\n";
-    print '   '.$url4."\r\n\r\n";
+    // fetch URL    
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_POST, 0); // osuosl.org doesn't allow POST
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $projectInfo = curl_exec($ch);       
+    curl_close($ch);
+    
     $packageName = $dependencies = '';
+    
+    // parse .info file for data
+    
+    // THEME
+    if (strpos($projectInfo,'engine =')) {
 
-    // try all 4 urls. this is so wasteful and it is not a permanent solution.
-    // version numbers are picked by human maintainers so we have to keep guessing if we want more complete auto-population :\
-    // furthermore, some .info files don't even match the project name (the URL you go to on d.o) and they all seem to be high profile, oft-used projects.
-
-    $ch = curl_init($url1);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $moduleInfo1 = curl_exec($ch);       
-    curl_close($ch);
-
-    $ch = curl_init($url2);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $moduleInfo2 = curl_exec($ch);       
-    curl_close($ch);
+      // now we parse the .info file for the goods
+      print "   -- theme .info file found";
+      
+      // parse output of .info file for package
+      preg_match('/package\s+=\s+\"?([^\"\s\n]*)\"?/',$projectInfo,$package);
+      if (isset($package[1])){
+        $packageName = ($package[1]) ? str_replace('\'','',$package[1]) : 'Other';
+      }
+        
+      // parse output of .info file for dependencies
+      preg_match_all('/dependencies\[\]\s+=\s+(.*)/', $projectInfo, $d);
+      $dependencies = serialize($d[1]);
+      
+      // update main module info in our tables
+      $updateSQL = sprintf(
+        "UPDATE `projects` SET ".
+        "package = '%s', dependencies = '%s', `type` = 'theme' ".
+        "WHERE id = %d; ",
+        $packageName, str_replace('\'','',$dependencies), 
+        $p['id']
+        );
+      print "\r\n\r\n   ".$updateSQL;
+      mysql_query($updateSQL) or die(mysql_error());
+      
+      
+      // fetching dev version information
+      $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Supported\|Development' | grep -v 'Recommended'";
+      $result = trim(`$cmd`);
+      
+      print "\r\n   ".$cmd."\r\n\r\n ".$result."\r\n";
+      $releases = explode("\n",$result);
+      $sql = '';
+      print "\r\n";
+      foreach($releases as $r){
+        preg_match('/ '.$version.'\.(.*?) /',$r,$match);
+        $dev = @trim($match[0]);
+        if ($dev != ''){
+          $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`) VALUES ('',%d,'%s','%s'); ",$p['id'],$version,$dev);
+          mysql_query($sql) or die(mysql_error());
+        } else {
+          $sql = '-- no dev version found; ';
+        }
+        print '   '.$sql."\r\n";
+      }
+      print "\r\n";
+      
+    }
     
-    $ch = curl_init($url3);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $themeInfo1 = curl_exec($ch);       
-    curl_close($ch);
-    
-    $ch = curl_init($url4);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $themeInfo2 = curl_exec($ch);       
-    curl_close($ch);
-    
-    // See if we found the .info file;
-    // Try the second URL if the first failed;
-
-    $moduleInfo = FALSE;
-    $themeInfo = FALSE;
-    
-    // IF ANYONE HAS A BETTER METHOD FOR THIS (I.E. A REAL METHOD) PLEASE LET ME KNOW!!! :)
-    
-    // + select either moduleInfo 1 or 2 and assign to the unnumbered variable
-    if (preg_match('/name.*?=/',$moduleInfo1)) {$moduleInfo = $moduleInfo1; }
-    elseif (preg_match('/name.*?=/',$moduleInfo2)) {$moduleInfo = $moduleInfo2; }
-    
-    // + do the same for themeInfo 1 and 2
-    if (preg_match('/name.*?=/',$themeInfo1)) {$themeInfo = $themeInfo1; }
-    elseif (preg_match('/name.*?=/',$themeInfo2)) {$themeInfo = $themeInfo2; }
-
-    /*
-    // debug    
-    print "\r\nMODULEINFO\r\n".$moduleInfo;
-    print "\r\nTHEMEINFO\r\n".$themeInfo;
-    //*/
-    
-    
-    
-    
-    if ($moduleInfo) {
+    // MODULE
+    else if (strpos($projectInfo,'$Id$')) {
 
       // now we parse the .info file for the goods
       print "   -- module .info file found";
       
       // parse output of .info file for package
-      preg_match('/package\s+=\s+\"?([^\"\n]*)\"?/',$moduleInfo,$package);
-      $packageName = ($package[1]) ? str_replace('\'','',$package[1]) : 'Other';
+      preg_match('/package\s+=\s+\"?([^\"\n]*)\"?/',$projectInfo,$package);
+      if (isset($package[1])){
+        $packageName = ($package[1]) ? str_replace('\'','',$package[1]) : 'Other';
+      }
   
       // parse output of .info file for dependencies. regex is simpler because project uniques are lowercase_with_underscores
-      preg_match_all('/dependencies\[\]\s+=\s+(.*)/', $moduleInfo, $d);
+      preg_match_all('/dependencies\[\]\s+=\s+(.*)/', $projectInfo, $d);
       $dependencies = serialize($d[1]);
       
       // update main module info in our tables
@@ -160,64 +155,23 @@ include('_lib.php');
           $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`) VALUES ('',%d,'%s','%s'); ",$p['id'],$version,$dev);
           mysql_query($sql) or die(mysql_error());
         } else {
-          $sql = '-- no version found; ';
+          $sql = '-- no dev version found; ';
         }
         print '   '.$sql."\r\n";
       }
       print "\r\n";
       
     }
-    else if ($themeInfo) {
 
-      // now we parse the .info file for the goods
-      print "   -- theme .info file found";
-      
-      // parse output of .info file for package
-      preg_match('/package\s+=\s+\"?([^\"\s\n]*)\"?/',$moduleInfo,$package);
-      $packageName = ($package[1]) ? str_replace('\'','',$package[1]) : 'Other';
-  
-      // parse output of .info file for dependencies
-      preg_match_all('/dependencies\[\]\s+=\s+(.*)/', $moduleInfo, $d);
-      $dependencies = serialize($d[1]);
-      
-      // update main module info in our tables
-      $updateSQL = sprintf(
-        "UPDATE `projects` SET ".
-        "package = '%s', dependencies = '%s', `type` = 'theme' ".
-        "WHERE id = %d; ",
-        $packageName, str_replace('\'','',$dependencies), 
-        $p['id']
-        );
-      print "\r\n\r\n   ".$updateSQL;
-      mysql_query($updateSQL) or die(mysql_error());
-      
-      
-      // fetching dev version information
-      $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Supported\|Development' | grep -v 'Recommended'";
-      $result = trim(`$cmd`);
-      
-      print "\r\n   ".$cmd."\r\n\r\n ".$result."\r\n";
-      $releases = explode("\n",$result);
-      $sql = '';
-      print "\r\n";
-      foreach($releases as $r){
-        preg_match('/ '.$version.'\.(.*?) /',$r,$match);
-        $dev = trim($match[0]);
-        if ($dev != ''){
-          $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`) VALUES ('',%d,'%s','%s'); ",$p['id'],$version,$dev);
-          mysql_query($sql) or die(mysql_error());
-        } else {
-          $sql = '-- no version found; ';
-        }
-        print '   '.$sql."\r\n";
-      }
-      print "\r\n";
-      
-    }
-    else if (strpos($moduleInfo,'InvalidRevision:')) {
+    /*
+    // BAD REQUEST - CVS, haven't found git equivalent
+    else if (strpos($projectInfo,'InvalidRevision:')) {
       // Requested version of Drupal doesn't support this module
       print "   ========== Not supported in Drupal ".$version."\r\n\r\n";
     }
+    //*/
+    
+    // BAD RESPONSE
     else {
       // Couldn't recognize file, don't do anything
       print "   ========== I have no idea what's going on with this one...\r\n\r\n";

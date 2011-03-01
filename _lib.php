@@ -17,7 +17,7 @@ if (CONFIG_FILE != 'PRESENT') {
  */
 function fetchContrib() {
   global $version;
-  $projectsSQL = sprintf("SELECT * FROM  `projects` WHERE `type` = 'module' OR `type` = 'theme' AND `version` = '%s' AND `url` = '' AND `status` = 1; ",$version);
+  $projectsSQL = sprintf("SELECT * FROM  `projects` WHERE `type` IN ('module','theme') AND `version` = '%s' AND `url` = '' AND `status` = 1; ",$version);
   $projects = mysql_query($projectsSQL);
   
   return $projects;
