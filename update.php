@@ -113,7 +113,7 @@ include('_lib.php');
     }
     
     // MODULE
-    else if (strpos($projectInfo,'$Id$')) {
+    else if (strpos($projectInfo,'$Id')) {
 
       // now we parse the .info file for the goods
       print "   -- module .info file found";
