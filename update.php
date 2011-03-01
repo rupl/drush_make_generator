@@ -69,9 +69,7 @@ include('_lib.php');
       
       // parse output of .info file for package
       preg_match('/package\s+=\s+\"?([^\"\s\n]*)\"?/',$projectInfo,$package);
-      if (isset($package[1])){
-        $packageName = ($package[1]) ? str_replace('\'','',$package[1]) : 'Other';
-      }
+      $packageName = ($package[1]) ? str_replace('\'','',$package[1]) : 'Other';
         
       // parse output of .info file for dependencies
       preg_match_all('/dependencies\[\]\s+=\s+(.*)/', $projectInfo, $d);
@@ -120,9 +118,7 @@ include('_lib.php');
       
       // parse output of .info file for package
       preg_match('/package\s+=\s+\"?([^\"\n]*)\"?/',$projectInfo,$package);
-      if (isset($package[1])){
-        $packageName = ($package[1]) ? str_replace('\'','',$package[1]) : 'Other';
-      }
+      $packageName = ($package[1]) ? str_replace('\'','',$package[1]) : 'Other';
   
       // parse output of .info file for dependencies. regex is simpler because project uniques are lowercase_with_underscores
       preg_match_all('/dependencies\[\]\s+=\s+(.*)/', $projectInfo, $d);
