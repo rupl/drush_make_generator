@@ -62,7 +62,7 @@ include('_lib.php');
     // parse .info file for data
     
     // THEME
-    if (strpos($projectInfo,'engine =')) {
+    if (preg_match('/engine\s*?=/',$projectInfo)) {
 
       // now we parse the .info file for the goods
       print "   -- theme .info file found";
