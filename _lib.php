@@ -264,7 +264,7 @@ function formDownload($type='libraries',$download=array()){
     case 'modules':
       $output .= '<div class="download label">';
         $output .= '<input type="text" class="unique" name="makefile[modules][|THIS|][unique]" value="'.$download['unique'].'" /> ';
-        $output .= '<select name="makefile[modules][|THIS|][type]" class="type"><option value="drupal">d.o</option><option value="file">www</option><option value="git">git</option></select>';
+        $output .= '<select name="makefile[modules][|THIS|][type]" class="type"><option value="drupal">drupal</option><option value="file">www</option><option value="git">git</option></select>';
         $output .= '<input type="text" class="url" name="makefile[modules][|THIS|][url]" value="'.$download['url'].'" disabled="disabled" />';
         $output .= '<input type="hidden" class="url" name="makefile[modules][|THIS|][maketype]" value="module" />'; // module, not "modules"
         $output .= '<a class="remove">remove</a>';
@@ -274,7 +274,7 @@ function formDownload($type='libraries',$download=array()){
     case 'themes':
       $output .= '<div class="download label">';
         $output .= '<input type="text" class="unique" name="makefile[themes][|THIS|][unique]" value="'.$download['unique'].'" /> ';
-        $output .= '<select name="makefile[themes][|THIS|][type]" class="type"><option value="drupal">d.o</option><option value="file">www</option><option value="git">git</option></select>';
+        $output .= '<select name="makefile[themes][|THIS|][type]" class="type"><option value="drupal">drupal</option><option value="file">www</option><option value="git">git</option></select>';
         $output .= '<input type="text" class="url" name="makefile[themes][|THIS|][url]" value="'.$download['url'].'" disabled="disabled" />';
         $output .= '<input type="hidden" class="url" name="makefile[themes][|THIS|][maketype]" value="theme" />'; // theme, not "themes"
         $output .= '<a class="remove">remove</a>';
@@ -284,7 +284,7 @@ function formDownload($type='libraries',$download=array()){
     case 'includes':
       $output .= '<div class="download label">';
         $output .= '<input type="text" class="unique" name="makefile[includes][|THIS|][unique]" value="'.$download['unique'].'" /> ';
-        $output .= '<select name="makefile[includes][|THIS|][type]" class="type"><option value="drupal">d.o</option><option value="file">www</option><option value="git">git</option></select>';
+        $output .= '<select name="makefile[includes][|THIS|][type]" class="type"><option value="drupal">drupal</option><option value="file">www</option><option value="git">git</option></select>';
         $output .= '<input type="text" class="url" name="makefile[includes][|THIS|][url]" value="'.$download['url'].'" disabled="disabled" />';
         $output .= '<input type="hidden" class="url" name="makefile[includes][|THIS|][maketype]" value="includes" />';
         $output .= '<a class="remove">remove</a>';
