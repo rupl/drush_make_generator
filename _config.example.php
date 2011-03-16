@@ -9,6 +9,8 @@ error_reporting(E_ALL);
 ini_set('display_errors', '1');
 //*/
 
+// Protect against pointless execs
+define('CONFIG_FILE','PRESENT');
 
 // Connect to database
 $dbh = mysql_connect('localhost','USER','PASS');
@@ -16,13 +18,9 @@ mysql_select_db('DATABASE');
 define('SQL_SEPARATOR','|');
 
 
-// point release of Drupal
+// major release of Drupal
 global $version;
 $version = (isset($_GET['v'])) ? $_GET['v'] : 6;
-
-
-// directory to install contrib modules
-define('CONTRIB_DIR','');
 
 
 // path to drush. default assumes you have an alias 'drush'
@@ -35,7 +33,18 @@ define('PATH_TO_DRUSH','drush');
 define('ANALYTICS_ACCOUNT','');
 
 
-// Protect against pointless execs
-define('CONFIG_FILE','PRESENT');
+
+
+/**
+ * MAKEFILE OPTIONS
+ * 
+ */
+
+// directory to install contrib modules
+define('CONTRIB_DIR','');
+
+// default shorturl value
+define('SHORTURL_DEFAULT','short-url');
+
 
 ?>
