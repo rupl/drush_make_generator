@@ -4,7 +4,8 @@ include('_lib.php');
 
 // sanitize token and pull makefile from db
 $token = (isset($_REQUEST['token']) && sanitize('token',$_REQUEST['token'])) ? $_REQUEST['token'] : '';
-$makefile = generateMakefile($token);
+$mode = (isset($_GET['raw'])) ? 'raw' : FALSE;
+$makefile = generateMakefile($token,$mode);
 
 if (!$makefile){
   $fail = 'fail';
@@ -12,6 +13,23 @@ if (!$makefile){
 Check your URL...\r\n\r\n\r\n
 ...or if there's an error onscreen post it at https://github.com/rupl/drush_make_generator/issues - thanks!";
 }
+
+
+
+
+
+
+// output mode?
+if ($mode == 'raw') {
+
+  // raw/permalink
+  header("Content-type: text/plain\r\n");
+  print $makefile;
+  exit;
+
+} else {
+
+  // bookmarking/sharing
 
 ?><!doctype html>  
 
@@ -60,7 +78,11 @@ Check your URL...\r\n\r\n\r\n
   		<h2>Your makefile is ready</h2>
   		<p>We've saved it for you as well!</p>
   		<p><a href="<?php print fileURL($token); ?>">Bookmark</a> or (in the future) update at any time.</p>
-  		<textarea name="makefile" id="makefile"><?php print $makefile; ?></textarea>
+      <textarea name="makefile" id="makefile">
+
+<?php print $makefile; ?>
+
+      </textarea>
 		<?php } ?>
 	</div>
 	
@@ -73,3 +95,5 @@ Check your URL...\r\n\r\n\r\n
 
 </body>
 </html>
+
+<?php } /* end of output mode */ ?>

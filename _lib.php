@@ -306,7 +306,7 @@ function formDownload($type='libraries',$download=array()){
 /**
  * fetch makefile and output
  */
-function generateMakefile($token){
+function generateMakefile($token,$mode=''){
   $makefile = '';
 
   $clean = sanitize('token',$token);
@@ -322,8 +322,11 @@ function generateMakefile($token){
       $libs     = unserialize($m['libs']);
       $opts     = unserialize($m['opts']);
       $share    = TRUE;
-      
+
+      if ($mode == 'raw') {$opts['raw'] = TRUE; }
+
       $makefile = makeFile($clean,$version,$core,$modules,$themes,$libs,$opts);
+
       return $makefile;
   } else {
     return FALSE;
@@ -336,13 +339,13 @@ function generateMakefile($token){
 /**
  * makefile template
  */
-function makefile($token,$version,$core,$modules,$themes,$libs,$opts){
+function makeFile($token,$version,$core,$modules,$themes,$libs,$opts){
 
   $makefile = '; $Id$
 ;
 ; ----------------
 ; Generated makefile from http://drushmake.me
-; Permanent URL: http://drushmake.me/file.php?token='.$token.'
+; Permanent URL: http://drushmake.me'.fileUrl($token,$opts).'
 ; ----------------
 ;
 ; This is a working makefile - try it! Any line starting with a `;` is a comment.
@@ -683,11 +686,16 @@ function sanitize($type='token',$data){
 /**
  * Generate URL requests for a token. For easy switching later.
  */
-function fileURL($token=''){
+function fileURL($token='',$opts=array()){
 
   // http://drushmake.me/a/short-url
 
-  return '/file.php?token='.$token;
+  $raw = '';
+  if (isset($opts['raw'])) {
+    $raw = '&raw';
+  }
+
+  return '/file.php?token='.$token.$raw;
 
 }
 
