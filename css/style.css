@@ -42,7 +42,7 @@ html { overflow-y: scroll; }
 a:hover, a:active { outline: none; }
 a, a:active, a:visited { color: #607890; }
 a:visited { color: #506880; }
-a:hover { color: #036; }
+a:hover { color: #def; }
 a.cloak { color: inherit; text-decoration: inherit; }
 
 ul, ol { margin-left: 1.8em; }
