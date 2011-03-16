@@ -345,7 +345,7 @@ function makeFile($token,$version,$core,$modules,$themes,$libs,$opts){
 ;
 ; ----------------
 ; Generated makefile from http://drushmake.me
-; Permanent URL: http://drushmake.me'.fileUrl($token,$opts).'
+; Permanent URL: '.fileUrl($token,$opts).'
 ; ----------------
 ;
 ; This is a working makefile - try it! Any line starting with a `;` is a comment.
@@ -695,7 +695,7 @@ function fileURL($token='',$opts=array()){
     $raw = '&raw';
   }
 
-  return '/file.php?token='.$token.$raw;
+  return 'http://drushmake.me/file.php?token='.$token.$raw;
 
 }
 

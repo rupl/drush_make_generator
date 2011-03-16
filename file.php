@@ -77,7 +77,7 @@ if ($mode == 'raw') {
 		<?php } else { ?>
   		<h2>Your makefile is ready</h2>
   		<p>We've saved it for you as well!</p>
-  		<p><a href="<?php print fileURL($token); ?>">Bookmark</a> or (in the future) update at any time.</p>
+  		<p><a href="<?php print fileURL($token); ?>">Bookmark</a>, <a href="<?php print fileURL($token); ?>">raw makefile</a>, or (in the future) update at any time.</p>
       <textarea name="makefile" id="makefile">
 
 <?php print $makefile; ?>
