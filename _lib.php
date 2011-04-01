@@ -51,21 +51,68 @@ function fetchThemes() {
 
 
 
+/**
+ * Generates the form for generating makefiles (for generating Drupal sites :)
+ */
+function formMakefile($v){
+  $output = '';
+  
+  $output .= formCores($v);
+  $output .= '<fieldset id="fs-contrib">
+    <legend>Modules</legend>';
+  $output .= formModules($v);
+  $output .= '</fieldset>
+  <fieldset id="fs-themes">
+    <legend>Themes</legend>';
+  $output .= formThemes($v);
+  $output .= '</fieldset>
+  <fieldset id="fs-libs">
+    <legend>Libraries</legend>';
+  $output .= formLibs($v);
+  $output .= '</fieldset>
+  <fieldset id="fs-opts">
+    <legend>Options</legend>';
+  $output .= formOpts($v);
+  $output .= '</fieldset>';
+  
+  return $output;
+
+}
 
 
 
 /**
- * Outputs a fieldset with all the options for Drupal core
+ * Outputs the major Drupal version fieldset
  */
-function formCores(){
-  global $version;
+function formVersion($v){
+  $v = ($v) ? $v : $version;  
   $output = '';
   
-  $coresSQL = sprintf("SELECT  *,`unique` AS coreName FROM  `projects` WHERE `type` = 'core' AND `version` = '%s' AND `status` = 1 ORDER BY `unique` ASC; ",$version);
+  if ($v == 6){$checked6 = 'checked="checked"'; $checked7 = ''; }
+  if ($v == 7){$checked6 = ''; $checked7 = 'checked="checked"'; }
+  
+  $output .= '<fieldset id="fs-version">
+    <legend>Drupal Version <span class="small">Since different modules and themes are available for each major version<br /> of Drupal, the form will be <strong>reset</strong> if you change this setting.</span></legend>
+    <label for="o-version6"><input id="o-version6" type="radio" name="makefile[version]" value="6" '.$checked6.' /> <span class="title">Drupal 6</span></label>
+    <label for="o-version7"><input id="o-version7" type="radio" name="makefile[version]" value="7" '.$checked7.'/> <span class="title">Drupal 7</span></label>
+  </fieldset>';
+  
+  return $output;
+  
+}
+
+/**
+ * Outputs a fieldset with all the options for Drupal core
+ */
+function formCores($v){
+  $v = ($v) ? $v : $version;
+  $output = '';
+  
+  $coresSQL = sprintf("SELECT  *,`unique` AS coreName FROM  `projects` WHERE `type` = 'core' AND `version` = '%s' AND `status` = 1 ORDER BY `unique` ASC; ",$v);
   $cores = mysql_query($coresSQL);
   
 	$output .= '<fieldset class="fs-core">
-			<legend>Pick a Core, Any Core</legend>';
+			<legend>Drupal core or distribution</legend>';
 
   while($c = mysql_fetch_assoc($cores)):
   	$output .= '
@@ -84,11 +131,11 @@ function formCores(){
 /**
  * Outputs fieldsets for all the contrib modules, grouped by package name (same groups as /admin/build/modules)
  */
-function formModules(){
-  global $version;
+function formModules($v){
+  $v = ($v) ? $v : $version;
   $output = '';
   
-  $groupsSQL = sprintf("SELECT DISTINCT package as groupName FROM `projects` WHERE `type` = 'module' AND `package` <> '' AND `version` = '%s' AND `status` = 1 ORDER BY package ASC; ",$version);
+  $groupsSQL = sprintf("SELECT DISTINCT package as groupName FROM `projects` WHERE `type` = 'module' AND `package` <> '' AND `version` = '%s' AND `status` = 1 ORDER BY package ASC; ",$v);
   $groups = mysql_query($groupsSQL);
   
   while ($group = mysql_fetch_assoc($groups)) {
@@ -101,7 +148,7 @@ function formModules(){
       "GROUP BY p.unique ".
       "ORDER BY p.unique ASC; ",
       SQL_SEPARATOR,
-      $group['groupName'],$version
+      $group['groupName'],$v
       );
 //    $output .= $sql;
     $projects = mysql_query($sql);
@@ -146,8 +193,8 @@ function formModules(){
 /**
  * Outputs fieldsets for all the contrib themes alphabetically
  */
-function formThemes(){
-  global $version;
+function formThemes($v){
+  $v = ($v) ? $v : $version;
   $output = '';
   
   $sql = sprintf(
@@ -158,7 +205,7 @@ function formThemes(){
     "GROUP BY p.unique ".
     "ORDER BY p.unique ASC; ",
     SQL_SEPARATOR,
-    $version
+    $v
     );
   // $output .= $sql;
   $projects = mysql_query($sql);
@@ -193,7 +240,6 @@ function formThemes(){
  * Includes a widget to add more
  */
 function formLibs(){
-  global $version;
   $output = '';
   
   $sql = sprintf(
@@ -203,8 +249,7 @@ function formLibs(){
     "WHERE `status` = 1 AND p.type = 'lib' ".
     "GROUP BY p.unique ".
     "ORDER BY p.unique ASC; ",
-    SQL_SEPARATOR,
-    $version
+    SQL_SEPARATOR
     );
   $projects = mysql_query($sql);
 
@@ -237,6 +282,34 @@ function formLibs(){
   return $output;
 }
 
+
+
+/**
+ * Outputs options for the makefile
+ */
+function formOpts($version){
+  $output = '';
+  
+  $output .= '<h4>Put modules in: </h4>
+    <label for="o-contribdir">
+      /sites/all/modules/
+      <input id="o-contribdir" type="text" name="makefile[opts][contrib_dir]" value="'. CONTRIB_DIR .'" />
+    </label>';
+/*
+  $output .= '<h4>To ease setup: </h4>
+    <label for="o-prep">
+      include <a href="https://github.com/rupl/drush_make_generator/raw/master/prep.sh" target="_blank">prep.sh</a>&nbsp;
+      <input id="o-prep" type="checkbox" name="makefile[opts][prep]" value="include" />
+    </label>
+    <h4>Short URL:</h4>
+    <label for="o-short">
+      http://drushmake.me/a/
+      <input id="o-prep" type="text" name="makefile[opts][short]" value="" />
+    </label>';
+*/
+  return $output;
+  
+}
 
 
 
@@ -339,7 +412,8 @@ function generateMakefile($token,$mode=''){
 /**
  * makefile template
  */
-function makeFile($token,$version,$core,$modules,$themes,$libs,$opts){
+function makeFile($token,$v,$core,$modules,$themes,$libs,$opts){
+  $opts['version'] = $v;
 
   $makefile = '; $Id$
 ;
@@ -355,7 +429,7 @@ function makeFile($token,$version,$core,$modules,$themes,$libs,$opts){
 ; Each makefile should begin by declaring the core version of Drupal that all
 ; projects should be compatible with.
   
-core = '.$version.'.x
+core = '.$opts['version'].'.x
   
 ; API version
 ; ------------
@@ -388,7 +462,6 @@ api = 2
 ; ---------
 '.makeLibs($libs,$opts).'
 
-
 '; // end of makefile
   
   
@@ -401,10 +474,9 @@ api = 2
  * Makes core request for makefile
  */
 function makeCore($core='drupal',$opts) {
-  global $version;
   $output = '';
   
-  switch($core.$version):
+  switch($core.$opts['version']):
 
     case 'openatrium6':
     case 'openatrium':
@@ -414,7 +486,6 @@ function makeCore($core='drupal',$opts) {
       $output .= 'projects[openatrium][download][url] = "http://openatrium.com/sites/openatrium.com/files/atrium_releases/atrium-1-0-beta9.tgz"'."\r\n";
       break;
 
-    case 'pressflow7':
     case 'pressflow6':
     case 'pressflow':
       $output .= '; Use Pressflow instead of Drupal core:'."\r\n";
@@ -424,21 +495,13 @@ function makeCore($core='drupal',$opts) {
       break;
     
     case 'drupal7':
-      $output .= '; CVS checkout of Drupal 7.x. Requires the `core` property to be set to 7.x.'."\r\n";
-      $output .= 'projects[drupal][type] = "core"'."\r\n";
-      $output .= 'projects[drupal][download][type] = "cvs"'."\r\n";
-      $output .= 'projects[drupal][download][root] = ":pserver:anonymous:anonymous@cvs.drupal.org:/cvs/drupal"'."\r\n";
-      $output .= 'projects[drupal][download][revision] = "HEAD"'."\r\n";
-      $output .= 'projects[drupal][download][module] = "drupal"'."\r\n";
+      $output .= '; Drupal 7.x. Requires the `core` property to be set to 7.x.'."\r\n";
+      $output .= 'projects[drupal][version] = 7'."\r\n";
       break;
     
     case 'drupal6':
-      $output .= '; CVS checkout of Drupal 6.x core:'."\r\n";
-      $output .= 'projects[drupal][type] = "core"'."\r\n";
-      $output .= 'projects[drupal][download][type] = "cvs"'."\r\n";
-      $output .= 'projects[drupal][download][root] = ":pserver:anonymous:anonymous@cvs.drupal.org:/cvs/drupal"'."\r\n";
-      $output .= 'projects[drupal][download][revision] = "DRUPAL-6"'."\r\n";
-      $output .= 'projects[drupal][download][module] = "drupal"'."\r\n";
+      $output .= '; Drupal 6.x core:'."\r\n";
+      $output .= 'projects[drupal][version] = 6'."\r\n";
       break;
 
     default:
@@ -565,7 +628,8 @@ function makeLibs($libs=array(),$opts=array()){
   endif;
   
   if (!$loop){
-    $output .= "; Adding a module such as jquery_update will never add the related library automatically.\r\n; https://github.com/rupl/drush_make_generator/issues/closed#issue/1 \r\n";
+    $output = '; No libraries were included';
+    //$output .= "; Adding a module such as jquery_update will never add the related library automatically.\r\n; https://github.com/rupl/drush_make_generator/issues/closed#issue/1 \r\n";
   }
   
   return $output;

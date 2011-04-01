@@ -190,12 +190,31 @@ footer p.github a {display: block; width: 31px; height: 31px; }
 footer a[rel=license] {display: block; margin-bottom: 1em; }
 footer a[class~=org] {display: block; width: 31px; height: 31px; background: url('/img/fourkitchens-drushmake-me-logo-31x31.png') no-repeat left top; text-indent: -9999em; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; }
 
+/* -- special styles for drupal version selection -- */
+
+#fs-version label {
+	display: block; float: left; margin: 0 2% 0 4%; padding: 0 0 0 .5em; border: 1px solid transparent; border-radius: 7px; background-color: #ccc; vertical-align: top; /* white-space: nowrap; */
+	background: #ccc;
+	background: #ccc -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#ccc));
+	background: #ccc -moz-linear-gradient(top,  #ccc,  #ccc);
+}
+#fs-version label:hover {
+	border: 1px solid #aaa; border-left: 1px solid #ddd; border-top: 1px solid #ddd;
+	background: #bbb;
+	background: #bbb -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#bbb));
+	background: #bbb -moz-linear-gradient(top,  #ccc,  #bbb);
+}
+#fs-version label:nth-of-type(3n+1) {margin-left: 3%; }
+#fs-version label span.title {display: inline-block; padding: 0 .6em .4em .2em; font-weight: 400; font-size: 2em; color: #333;  position: relative; top: 4px; }
+#fs-version legend {position: relative; }
+#fs-version legend .small {display: block; margin: 0 2em 0 0; font-size: .55em; font-style: italic; color: #ccc; font-weight: 200; position: absolute; top: 11px; left: 280px; }
 
 
 
 /* -- Medium screens -- */
 @media (min-width: 481px) {
 	body {}
+	#generate {min-height: 800px; }
 	p,ul,ol,dl {margin: 0 0 1em 0; font-size: 1.3em; }
 	legend h3 {font-size: inherit; font-weight: 400; }
 	h4 {width: 40%; float: left; text-align: right; margin: 0 0 0 0; padding: 0 2% 0 0; font-size: 1.4em; position: relative; top: -2px; }

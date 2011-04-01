@@ -2,9 +2,18 @@
 js for http://drushmake.me
 */
 
+// scopeless vars!
+lastval = $('#fs-version :radio:checked').val();
+
 $(function(){
 
   // UI
+  
+  // slide to on-page anchors
+  $.localScroll({
+    duration: 425,
+    hash: true
+  });
   
   // release drop-downs are disabled until you check each module
   $('input[type="checkbox"]').change(function(e){
@@ -84,6 +93,24 @@ $(function(){
   });
   
   
+  // Major Version - form refresh
+  // lastval is a scopeless var
+  $('#fs-version :radio').click(function(){
+    var $this = $(this);
+    
+    if ($this.val() != lastval && confirm('If you switch versions, your current progress will be lost! No undos..')) {      
+      $.get(
+        '/ajax.php?ask=all&v='+$this.val(),
+        function(data){
+          $('#generator').fadeOut(160,function(){
+            $(this).html(data).fadeIn(240);
+            $.scrollTo('#generate',425);
+            lastval = $this.val();
+        });
+      });
+    }
+  });
+  
   
   // Validation
   
@@ -94,12 +121,7 @@ $(function(){
       alert('You forgot to select a core! ');
       e.preventDefault();
     }
-  });
-  
-  $('.download .type:not(:selected)').each(function(){
-    
-  });
-  
+  });  
   
 });
 

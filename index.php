@@ -24,7 +24,7 @@ include('_lib.php');
 	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans">
 	<link rel="stylesheet" href="css/960.css" media="(min-width: 960px)">
 	<link rel="stylesheet" href="css/formalize.css" media="(min-width: 481px)">
-	<link rel="stylesheet" href="css/style.css?v=2">
+	<link rel="stylesheet" href="css/style.css">
 	<script src="js/libs/modernizr-1.6.min.js"></script>
 </head>
 
@@ -62,40 +62,11 @@ include('_lib.php');
 		<h2>Customize your makefile</h2>
 		<form id="generateForm" action="/generate.php" method="post">
 		  
-      <?php print formCores(); ?>
-      
-      <fieldset id="fs-contrib">
-        <legend>Modules</legend>
-        <?php print formModules(); ?>
-      </fieldset>
-      <fieldset id="fs-themes">
-        <legend>Themes</legend>
-        <?php print formThemes(); ?>
-      </fieldset>
-      
-      <fieldset id="fs-libs">
-        <legend>Libraries</legend>
-        <?php print formLibs(); ?>
-      </fieldset>
-      
-      <fieldset id="fs-opts">
-        <legend>Options</legend>
-        <h4>Put modules in: </h4>
-        <label for="o-contribdir">
-          /sites/all/modules/
-          <input id="o-contribdir" type="text" name="makefile[opts][contrib_dir]" value="<?= CONTRIB_DIR ?>" />
-        </label>
-        <!-- h4>To ease setup: </h4>
-        <label for="o-prep">
-          include <a href="https://github.com/rupl/drush_make_generator/raw/master/prep.sh" target="_blank">prep.sh</a>&nbsp;
-          <input id="o-prep" type="checkbox" name="makefile[opts][prep]" value="include" />
-        </label>
-        <h4>Short URL:</h4>
-        <label for="o-short">
-          http://drushmake.me/a/
-          <input id="o-prep" type="text" name="makefile[opts][short]" value="" />
-        </label -->
-      </fieldset>
+      <?php print formVersion($version); ?>
+		  
+		  <div id="generator">
+        <?php print formMakefile($version); ?>
+      </div>
       
 			<button type="submit">Generate makefile</button>
 		</form>

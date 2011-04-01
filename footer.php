@@ -10,6 +10,8 @@
 	<!-- scripts concatenated and minified via ant build script-->
 		<script src="/js/jquery.formalize.js"></script>
 		<script src="/js/plugins.js"></script>
+		<script src="/js/libs/jquery.scrollTo-min.js"></script>
+		<script src="/js/libs/jquery.localScroll-min.js"></script>
 		<script src="/js/script.js"></script>
 	<!-- end concatenated and minified scripts-->
 	
