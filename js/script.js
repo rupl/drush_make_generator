@@ -16,7 +16,7 @@ $(function(){
   });
   
   // release drop-downs are disabled until you check each module
-  $('input[type="checkbox"]').change(function(e){
+  $('input[type="checkbox"]').live('change',function(e){
     if (this.checked){
       $(this).siblings('select').attr('disabled','');
     }else{
@@ -34,7 +34,7 @@ $(function(){
   });
 
   // prevent live drop-down clicks from bubbling up to the checkbox event
-  $('label select').click(function(){return false; });
+  $('label select').live('click',function(){return false; });
   
   // prevent spellcheck in makefile textarea
   $('#makefile').attr('spellcheck',false);
@@ -103,9 +103,14 @@ $(function(){
         '/ajax.php?ask=all&v='+$this.val(),
         function(data){
           $('#generator').fadeOut(160,function(){
+            // refresh form
             $(this).html(data).fadeIn(240);
             $.scrollTo('#generate',425);
             lastval = $this.val();
+            
+            // cosmetics
+            $('#fs-version :radio').parent().removeClass('active');
+            $this.parent().addClass('active');
         });
       });
     }

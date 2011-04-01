@@ -204,6 +204,12 @@ footer a[class~=org] {display: block; width: 31px; height: 31px; background: url
 	background: #bbb -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#bbb));
 	background: #bbb -moz-linear-gradient(top,  #ccc,  #bbb);
 }
+#fs-version label.active {
+	border: 1px solid #aaa; border-left: 1px solid #ddd; border-top: 1px solid #ddd;
+	background: #bbb;
+	background: #bbb -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#999));
+	background: #bbb -moz-linear-gradient(top,  #ccc,  #999);
+}
 #fs-version label:nth-of-type(3n+1) {margin-left: 3%; }
 #fs-version label span.title {display: inline-block; padding: 0 .6em .4em .2em; font-weight: 400; font-size: 2em; color: #333;  position: relative; top: 4px; }
 #fs-version legend {position: relative; }
