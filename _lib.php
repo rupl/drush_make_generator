@@ -415,9 +415,7 @@ function generateMakefile($token,$mode=''){
 function makeFile($token,$v,$core,$modules,$themes,$libs,$opts){
   $opts['version'] = $v;
 
-  $makefile = '; $Id$
-;
-; ----------------
+  $makefile = '; ----------------
 ; Generated makefile from http://drushmake.me
 ; Permanent URL: '.fileUrl($token,$opts).'
 ; ----------------
