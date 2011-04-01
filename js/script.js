@@ -5,6 +5,11 @@ js for http://drushmake.me
 // scopeless vars!
 lastval = $('#fs-version :radio:checked').val();
 
+// initialize ui
+$('#fs-version :radio:checked').parent().addClass('active');
+
+
+
 $(function(){
 
   // UI
