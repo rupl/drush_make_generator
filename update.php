@@ -25,7 +25,7 @@ include('_lib.php');
   
     $count++;
     
-    // delete old versions
+    // delete old versions as we create new ones
     // There's no reason to keep a record of past releases. Drupal's version control does that.
     $cleanSQL = sprintf("DELETE FROM `versions` WHERE pid = %d; ",$p['id']);
     $cleanResult = mysql_query($cleanSQL);
