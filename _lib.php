@@ -326,41 +326,41 @@ function formDownload($type='libraries',$download=array()){
   
     case 'libraries':
       $output .= '<div class="download label">';
-        $output .= '<input type="text" class="unique" name="makefile[libs][|THIS|][unique]" value="'.$download['unique'].'" /> ';
-        $output .= '<select name="makefile[libs][|THIS|][type]" class="type"><option value="file">www</option><option value="git">git</option></select>';
-        $output .= '<input type="text" class="url" name="makefile[libs][|THIS|][url]" value="'.$download['url'].'" />';
-        $output .= '<input type="hidden" class="url" name="makefile[libs][|THIS|][maketype]" value="libraries" />';
         $output .= '<a class="remove">remove</a>';
+        $output .= '<select name="makefile[libs][|THIS|][type]" class="type"><option value="file">www</option><option value="git">git</option></select>';
+        $output .= '<input type="text" class="unique" name="makefile[libs][|THIS|][unique]" value="'.$download['unique'].'" /> ';
+        $output .= '<input type="text" class="url" name="makefile[libs][|THIS|][url]" value="'.$download['url'].'" />';
+        $output .= '<input type="hidden" name="makefile[libs][|THIS|][maketype]" value="libraries" />';
       $output .= '</div>';
       break;
 
     case 'modules':
       $output .= '<div class="download label">';
-        $output .= '<input type="text" class="unique" name="makefile[modules][|THIS|][unique]" value="'.$download['unique'].'" /> ';
-        $output .= '<select name="makefile[modules][|THIS|][type]" class="type"><option value="drupal">drupal</option><option value="file">www</option><option value="git">git</option></select>';
-        $output .= '<input type="text" class="url" name="makefile[modules][|THIS|][url]" value="'.$download['url'].'" disabled="disabled" />';
-        $output .= '<input type="hidden" class="url" name="makefile[modules][|THIS|][maketype]" value="module" />'; // module, not "modules"
         $output .= '<a class="remove">remove</a>';
+        $output .= '<select name="makefile[modules][|THIS|][type]" class="type"><option value="drupal">drupal.org/project/</option><option value="file">www</option><option value="git">git</option></select>';
+        $output .= '<input type="text" class="unique" name="makefile[modules][|THIS|][unique]" value="'.$download['unique'].'" /> ';
+        $output .= '<input type="text" class="url" name="makefile[modules][|THIS|][url]" value="'.$download['url'].'" disabled="disabled" />';
+        $output .= '<input type="hidden" name="makefile[modules][|THIS|][maketype]" value="module" />'; // module, not "modules"
       $output .= '</div>';
       break;
     
     case 'themes':
       $output .= '<div class="download label">';
-        $output .= '<input type="text" class="unique" name="makefile[themes][|THIS|][unique]" value="'.$download['unique'].'" /> ';
-        $output .= '<select name="makefile[themes][|THIS|][type]" class="type"><option value="drupal">drupal</option><option value="file">www</option><option value="git">git</option></select>';
-        $output .= '<input type="text" class="url" name="makefile[themes][|THIS|][url]" value="'.$download['url'].'" disabled="disabled" />';
-        $output .= '<input type="hidden" class="url" name="makefile[themes][|THIS|][maketype]" value="theme" />'; // theme, not "themes"
         $output .= '<a class="remove">remove</a>';
+        $output .= '<select name="makefile[themes][|THIS|][type]" class="type"><option value="drupal">drupal.org/project/</option><option value="file">www</option><option value="git">git</option></select>';
+        $output .= '<input type="text" class="unique" name="makefile[themes][|THIS|][unique]" value="'.$download['unique'].'" /> ';
+        $output .= '<input type="text" class="url" name="makefile[themes][|THIS|][url]" value="'.$download['url'].'" disabled="disabled" />';
+        $output .= '<input type="hidden" name="makefile[themes][|THIS|][maketype]" value="theme" />'; // theme, not "themes"
       $output .= '</div>';
       break;
     
     case 'includes':
       $output .= '<div class="download label">';
-        $output .= '<input type="text" class="unique" name="makefile[includes][|THIS|][unique]" value="'.$download['unique'].'" /> ';
-        $output .= '<select name="makefile[includes][|THIS|][type]" class="type"><option value="drupal">drupal</option><option value="file">www</option><option value="git">git</option></select>';
-        $output .= '<input type="text" class="url" name="makefile[includes][|THIS|][url]" value="'.$download['url'].'" disabled="disabled" />';
-        $output .= '<input type="hidden" class="url" name="makefile[includes][|THIS|][maketype]" value="includes" />';
         $output .= '<a class="remove">remove</a>';
+        $output .= '<input type="text" class="unique" name="makefile[includes][|THIS|][unique]" value="'.$download['unique'].'" /> ';
+        $output .= '<select name="makefile[includes][|THIS|][type]" class="type"><option value="drupal">drupal.org/project/</option><option value="file">www</option><option value="git">git</option></select>';
+        $output .= '<input type="text" class="url" name="makefile[includes][|THIS|][url]" value="'.$download['url'].'" disabled="disabled" />';
+        $output .= '<input type="hidden" name="makefile[includes][|THIS|][maketype]" value="includes" />';
       $output .= '</div>';
       break;
     

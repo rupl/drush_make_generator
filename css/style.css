@@ -223,8 +223,8 @@ footer a[class~=org] {display: block; width: 31px; height: 31px; background: url
 	#generate {min-height: 800px; }
 	p,ul,ol,dl {margin: 0 0 1em 0; font-size: 1.3em; }
 	legend h3 {font-size: inherit; font-weight: 400; }
-	h4 {width: 40%; float: left; text-align: right; margin: 0 0 0 0; padding: 0 2% 0 0; font-size: 1.4em; position: relative; top: -2px; }
-	label, .download {display: block; margin: 0 0 0 43%; padding: 0 0 .5em 2%; border-left: 1px solid #bbb; }
+	h4 {width: 30%; float: left; text-align: right; margin: 0 0 0 0; padding: 0 2% 0 0; font-size: 1.4em; position: relative; top: -2px; }
+	label, .download {display: block; margin: 0 0 0 33%; padding: 0 0 .5em 2%; border-left: 1px solid #bbb; }
   label:nth-of-type(3n+1),
     .download:nth-of-type(3n+1) {/* margin-left: 3%; */}
   label input[type=checkbox],
@@ -235,11 +235,12 @@ footer a[class~=org] {display: block; width: 31px; height: 31px; background: url
 	 .download select {display: inline; }
 
 	div.download {clear: both; padding-top: .5em; border-left: 0; }
-	div.download .unique {clear: left; float: left; width: 140px; margin: 0 .5em 0 0; position: relative; top: -3px; }
+	div.download .remove {clear: left; float: left; width: 18px; height: 18px; margin: 0 .5em 0 0; background: url('../img/delete.png') no-repeat 1px 1px; text-indent: -9999px; }
 	div.download .type {float: left; margin: 0 .5em 0 0; padding: 0 2% 0 0; font-size: 1.4em; position: relative; top: -2px; }
-	div.download .url {float: left; width: 240px; margin: 0 .5em 0 0; position: relative; top: -3px; }
-	div.download .remove {float: left; width: 18px; height: 18px; margin: 0 .5em 0 0; background: url('../img/delete.png') no-repeat 1px 1px; text-indent: -9999px; }
-	a.another {margin: 0 0 0 45%; }
+	div.download .unique {float: left; width: 120px; margin: 0 .5em 0 0; position: relative; top: -3px; }
+	div.download .url {float: left; width: 280px; margin: 0 .5em 0 0; opacity: 1; position: relative; top: -3px; -webkit-transition: opacity .2s linear; }
+	div.download .url[disabled] {opacity: 0; }
+	a.another {display: inline-block; margin: 0 0 0 35%; }
 
 	fieldset#fs-opts input[type=text] {position: relative; top: -2px; }
 }
