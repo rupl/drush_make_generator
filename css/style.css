@@ -236,9 +236,9 @@ footer a[class~=org] {display: block; width: 31px; height: 31px; background: url
 
 	div.download {clear: both; padding-top: .5em; border-left: 0; }
 	div.download .remove {clear: left; float: left; width: 18px; height: 18px; margin: 0 .5em 0 0; background: url('../img/delete.png') no-repeat 1px 1px; text-indent: -9999px; }
-	div.download .type {float: left; margin: 0 .5em 0 0; padding: 0 2% 0 0; font-size: 1.4em; position: relative; top: -2px; }
+	div.download .type {float: left; margin: 0 4px 0 0; padding: 0 0 0 0; font-size: 1.4em; position: relative; top: -2px; }
 	div.download .unique {float: left; width: 120px; margin: 0 .5em 0 0; position: relative; top: -3px; }
-	div.download .url {float: left; width: 280px; margin: 0 .5em 0 0; opacity: 1; position: relative; top: -3px; -webkit-transition: opacity .2s linear; }
+	div.download .url {float: left; width: 275px; margin: 0 .5em 0 0; opacity: 1; position: relative; top: -3px; -webkit-transition: opacity .2s linear; }
 	div.download .url[disabled] {opacity: 0; }
 	a.another {display: inline-block; margin: 0 0 0 35%; }
 
