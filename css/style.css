@@ -113,7 +113,7 @@ a.ready {
 a.ready:active {position: relative; top: 1px; }
 
 form#generateForm {}
-fieldset {margin: 0 0 36px 0; padding: 1em 0% 2em; background: #ccc; color: #333;
+fieldset {margin: 0 0 36px 0; padding: 1em 0 2em; background: #ccc; color: #333;
   -moz-box-shadow: 0 0 6px rgba(0,0,0,0.5);
   -webkit-box-shadow: 0 0 6px rgba(0,0,0,0.5);
   box-shadow: 0 0 6px rgba(0,0,0,0.5);
@@ -122,7 +122,7 @@ fieldset {margin: 0 0 36px 0; padding: 1em 0% 2em; background: #ccc; color: #333
   border-radius: 16px; 
 }
 fieldset legend {
-	width: 92%; margin: 0; padding: .5em 4%; color: #faa51a; font-size: 2em; font-weight: 400; font-family: "Droid Sans", sans-serif; text-shadow: 1px 1px 0 #000;
+	width: 92.5%; margin: 0; padding: .5em 4%; color: #faa51a; font-size: 2em; font-weight: 400; font-family: "Droid Sans", sans-serif; text-shadow: 1px 1px 0 #000;
 	-moz-box-shadow: 0 0 4px rgba(0,0,0,0.5);
 	-webkit-box-shadow: 0 0 4px rgba(0,0,0,0.5);
 	box-shadow: 0 0 4px rgba(0,0,0,0.5);
@@ -231,7 +231,7 @@ footer a[class~=org] {display: block; width: 31px; height: 31px; background: url
 #fs-version label:nth-of-type(3n+1) {margin-left: 3%; }
 #fs-version label span.title {display: inline-block; padding: 0 .6em .4em .2em; font-weight: 400; font-size: 2em; color: #333;  position: relative; top: 4px; }
 #fs-version legend {position: relative; }
-#fs-version legend .small {display: block; margin: 0 2em 0 0; font-size: .55em; font-style: italic; color: #ccc; font-weight: 200; position: absolute; top: 11px; left: 280px; }
+#fs-version legend .small {display: block; margin: 0 2em 0 0; font-size: .55em; font-style: italic; color: #ccc; font-weight: 200; opacity: 0; position: absolute; top: 11px; left: 280px; -webkit-transition: opacity .4s linear; -moz-transition: opacity .4s linear; transition: opacity .4s linear; }
 
 
 
@@ -266,6 +266,7 @@ footer a[class~=org] {display: block; width: 31px; height: 31px; background: url
 
 /* -- Large screens -- */
 @media (min-width: 960px) {
+	#fs-version legend .small {opacity: 1; }
   body {padding: 0; }
   footer {position: relative; top: -41px; }
   footer p.github {float: right; margin-right: 0; }
