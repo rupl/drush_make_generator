@@ -96,6 +96,7 @@ body {color: #dea; padding: 3%; }
 header {}
 
 h1,h2 {margin: .5em 0; font-size: 2em; font-family: "Droid Sans", sans-serif; color: #ed3; }
+h4 {margin: .5em; padding: 5px; background: #456; color: #eee; border-radius: 3px; }
 nav {}
 nav li {display: inline-block; padding: 0 .5em; }
 nav li a {font-size: 1.6em; color: #fff; }
@@ -134,11 +135,28 @@ fieldset legend {
 }
 label,
 .download {
-	display: block; margin: 0; padding: 0; border: 1px solid transparent; background-color: #ccc; vertical-align: top; /* white-space: nowrap; */
+	display: block; margin: 0 0 .5em .5em; padding: 0; border: 1px solid transparent; background-color: #ccc; vertical-align: top; /* white-space: nowrap; */
 	background: #ccc;
 	background: #ccc -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#ccc));
 	background: #ccc -moz-linear-gradient(top,  #ccc,  #ccc);
 }
+label select {float: right; margin: 0 .5em 0 0; }
+.download .remove {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin: 0 .5em 0 0;
+  background: url('../img/delete.png') no-repeat 1px 1px;
+  text-indent: -9999px;
+  position: absolute;
+}
+.download .type,
+.download .unique,
+.download .url {
+  display: block;
+  margin: 0 0 0 2em;
+}
+
 /*
 label:hover
 .download:hover {
@@ -223,7 +241,7 @@ footer a[class~=org] {display: block; width: 31px; height: 31px; background: url
 	#generate {min-height: 800px; }
 	p,ul,ol,dl {margin: 0 0 1em 0; font-size: 1.3em; }
 	legend h3 {font-size: inherit; font-weight: 400; }
-	h4 {width: 30%; float: left; text-align: right; margin: 0 0 0 0; padding: 0 2% 0 0; font-size: 1.4em; position: relative; top: -2px; }
+	h4 {width: 30%; float: left; text-align: right; margin: 0; padding: 0 2% 0 0; font-size: 1.4em; color: #333; background: transparent; position: relative; top: -2px; }
 	label, .download {display: block; margin: 0 0 0 33%; padding: 0 0 .5em 2%; border-left: 1px solid #bbb; }
   label:nth-of-type(3n+1),
     .download:nth-of-type(3n+1) {/* margin-left: 3%; */}
@@ -232,10 +250,10 @@ footer a[class~=org] {display: block; width: 31px; height: 31px; background: url
 	label span.title,
 	 .download span.title {display: inline-block; padding-left: 4px; font-family: "Droid Sans", sans-serif; }
 	label select,
-	 .download select {display: inline; }
+	 .download select {float: none; display: inline; }
 
 	div.download {clear: both; padding-top: .5em; border-left: 0; }
-	div.download .remove {clear: left; float: left; width: 18px; height: 18px; margin: 0 .5em 0 0; background: url('../img/delete.png') no-repeat 1px 1px; text-indent: -9999px; }
+	div.download .remove {clear: left; float: left; position: relative; }
 	div.download .type {float: left; margin: 0 4px 0 0; padding: 0; font-size: 1.2em; position: relative; top: -2px; }
 	div.download .unique {float: left; width: 120px; margin: 0 .5em 0 0; position: relative; top: -3px; }
 	div.download .url {float: left; width: 275px; margin: 0 .5em 0 0; opacity: 1; position: relative; top: -3px; -webkit-transition: opacity .2s linear; -moz-transition: opacity .2s linear; transition: opacity .2s linear; }
