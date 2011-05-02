@@ -50,3 +50,11 @@ DirectoryIndex index.php
   RewriteCond %{REQUEST_URI} !=/favicon.ico
   RewriteRule ^a/(.*)$ file.php?short=$1 [L,QSA]
 </IfModule>
+
+# Password Protect admin functionality
+<FilesMatch "update.php">
+AuthName "Admin area"
+AuthType Basic
+AuthUserFile /home/cruppel/.htpasswd
+require valid-user
+</FilesMatch>
