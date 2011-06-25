@@ -48,7 +48,8 @@ include('_lib.php');
     $releases = explode("\n",$result);
     $sql = '';
     if (isset($recVersion[0])){
-      $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$recVersion[0],STABLE);
+      $recommended = substr($recVersion[0],4);
+      $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$recommended,STABLE);
       mysql_query($sql) or die(mysql_error());
     } else {
       $sql = '-- no recommended releases found; ';
@@ -106,6 +107,7 @@ include('_lib.php');
       foreach($releases as $r){
         preg_match('/ '.$version.'\.(.*?) /',$r,$match);
         $dev = @trim($match[0]);
+        $dev = substr($dev,4);
         if ($dev != ''){
           $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$dev,SUPPORTED);
           mysql_query($sql) or die(mysql_error());
@@ -125,6 +127,7 @@ include('_lib.php');
       foreach($releases as $r){
         preg_match('/ '.$version.'\.(.*?) /',$r,$match);
         $dev = @trim($match[0]);
+        $dev = substr($dev,4);
         if ($dev != ''){
           $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$dev,DEV);
           mysql_query($sql) or die(mysql_error());
@@ -173,6 +176,7 @@ include('_lib.php');
       foreach($releases as $r){
         preg_match('/'.$version.'\.(.*?) /',$r,$match);
         $rel = @trim($match[0]);
+        $rel = substr($rel,4);
         if ($rel != ''){
           $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$rel,SUPPORTED);
           mysql_query($sql) or die(mysql_error());
@@ -192,6 +196,7 @@ include('_lib.php');
       foreach($releases as $r){
         preg_match('/'.$version.'\.(.*?) /',$r,$match);
         $rel = @trim($match[0]);
+        $rel = substr($rel,4);
         if ($rel != ''){
           $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$rel,DEV);
           mysql_query($sql) or die(mysql_error());
