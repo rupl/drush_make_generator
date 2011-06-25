@@ -116,7 +116,7 @@ include('_lib.php');
       }
 
       // fetching dev releases
-      $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Development' | grep -v 'Recommended'";
+      $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Development' | grep -v 'Recommended' | grep -v 'Supported'";
       $result = trim(`$cmd`);
       
       print "\r\n   ".$cmd."\r\n\r\n ".$result."\r\n";
@@ -183,7 +183,7 @@ include('_lib.php');
       }
 
       // fetching dev releases
-      $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Development' | grep -v 'Recommended'";
+      $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Development' | grep -v 'Recommended' | grep -v 'Supported'";
       $result = trim(`$cmd`);
       
       print "\r\n   ".$cmd."\r\n\r\n ".$result."\r\n";
