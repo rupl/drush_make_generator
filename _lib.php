@@ -757,7 +757,9 @@ function fileURL($token='',$opts=array()){
     $raw = '&raw';
   }
 
-  return 'http://drushmake.me/file.php?token='.$token.$raw;
+  $domain = $_SERVER['HTTP_HOST'];
+
+  return 'http://'.$domain.'/file.php?token='.$token.$raw;
 
 }
 
