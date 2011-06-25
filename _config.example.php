@@ -33,6 +33,11 @@ define('PATH_TO_DRUSH','drush');
 define('ANALYTICS_ACCOUNT','');
 
 
+// release flags
+// defined numerically so we can sort them logically
+define('STABLE',9);
+define('SUPPORTED',5);
+define('DEV',0);
 
 
 /**
