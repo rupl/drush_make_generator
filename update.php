@@ -27,6 +27,7 @@ include('_lib.php');
     
     // delete old versions as we create new ones
     // There's no reason to keep a record of past releases. Drupal's version control does that.
+    // Furthermore, a makefile is stored as text later on to ensure it's always rendered as requested
     $cleanSQL = sprintf("DELETE FROM `versions` WHERE pid = %d; ",$p['id']);
     $cleanResult = mysql_query($cleanSQL);
     
@@ -40,14 +41,23 @@ include('_lib.php');
     // debug 
     print "\r\ncmd:\r\n   ".$cmd."\r\n\r\nresult:\r\n   ".$result."\r\n";
 
-    // release string; this catches a space on each side to ensure any releases like 6.x-6.0 or 7.x-7.0 get fully captured
-    preg_match('/ '.$version.'\.x-(\d{1}\.\d*(-[a-zA-Z0-9]*)? )/',$result,$recVersion);
+    // release string; this regex catches a space on each side to ensure any releases like 6.x-6.0 or 7.x-7.0 get fully captured
+    preg_match('/'.$version.'\.x-\d{1}\.\d*(-[a-zA-Z0-9]*)?/',$result,$recVersion);
 
-    // GIT WITH THE PROGRAMME
-    
+    // record recommended release
+    $releases = explode("\n",$result);
+    $sql = '';
+    if (isset($recVersion[0])){
+      $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$recVersion[0],STABLE);
+      mysql_query($sql) or die(mysql_error());
+    } else {
+      $sql = '-- no recommended releases found; ';
+    }
+    print '   '.$sql."\r\n";
+
     // build URL, removing space from the release string we captured just now
     $url = 'http://drupalcode.org/project/'.$p['unique'].'.git/blob_plain/refs/tags/'.trim($recVersion[0]).':/'.$p['unique'].'.info';
-    print "\r\n".'url: '.$url."\r\n\r\n";
+    print "\r\n".'url: '.$url."\r\n";
 
     // fetch URL    
     $ch = curl_init($url);
@@ -83,26 +93,43 @@ include('_lib.php');
         $packageName, str_replace('\'','',$dependencies), 
         $p['id']
         );
-      print "\r\n\r\n   ".$updateSQL;
+      print "\r\n\r\n   ".$updateSQL."\r\n";
       mysql_query($updateSQL) or die(mysql_error());
       
-      
-      // fetching dev version information
-      $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Supported\|Development' | grep -v 'Recommended'";
+      // fetching supported releases
+      $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Supported' | grep -v 'Recommended'";
       $result = trim(`$cmd`);
       
       print "\r\n   ".$cmd."\r\n\r\n ".$result."\r\n";
       $releases = explode("\n",$result);
       $sql = '';
-      print "\r\n";
       foreach($releases as $r){
         preg_match('/ '.$version.'\.(.*?) /',$r,$match);
         $dev = @trim($match[0]);
         if ($dev != ''){
-          $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`) VALUES ('',%d,'%s','%s'); ",$p['id'],$version,$dev);
+          $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$dev,SUPPORTED);
           mysql_query($sql) or die(mysql_error());
         } else {
-          $sql = '-- no dev version found; ';
+          $sql = '-- no supported releases found; ';
+        }
+        print '   '.$sql."\r\n";
+      }
+
+      // fetching dev releases
+      $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Development' | grep -v 'Recommended'";
+      $result = trim(`$cmd`);
+      
+      print "\r\n   ".$cmd."\r\n\r\n ".$result."\r\n";
+      $releases = explode("\n",$result);
+      $sql = '';
+      foreach($releases as $r){
+        preg_match('/ '.$version.'\.(.*?) /',$r,$match);
+        $dev = @trim($match[0]);
+        if ($dev != ''){
+          $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$dev,DEV);
+          mysql_query($sql) or die(mysql_error());
+        } else {
+          $sql = '-- no dev releases found; ';
         }
         print '   '.$sql."\r\n";
       }
@@ -118,7 +145,7 @@ include('_lib.php');
       
       // parse output of .info file for package
       preg_match('/package\s+=\s+\"?([^\"\n]*)\"?/',$projectInfo,$package);
-      $packageName = ($package[1]) ? str_replace('\'','',$package[1]) : 'Other';
+      $packageName = (isset($package[1])) ? str_replace('\'','',$package[1]) : 'Other';
   
       // parse output of .info file for dependencies. regex is simpler because project uniques are lowercase_with_underscores
       preg_match_all('/dependencies\[\]\s+=\s+(.*)/', $projectInfo, $d);
@@ -132,45 +159,55 @@ include('_lib.php');
         $packageName, str_replace('\'','',$dependencies), 
         $p['id']
         );
-      print "\r\n\r\n   ".$updateSQL;
+      print "\r\n   ".$updateSQL."\r\n";
       mysql_query($updateSQL) or die(mysql_error());
       
       
-      // fetching dev version information
-      $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Supported\|Development' | grep -v 'Recommended'";
+      // fetching supported releases
+      $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Supported' | grep -v 'Recommended'";
       $result = trim(`$cmd`);
       
       print "\r\n   ".$cmd."\r\n\r\n ".$result."\r\n";
       $releases = explode("\n",$result);
       $sql = '';
-      print "\r\n";
       foreach($releases as $r){
-        preg_match('/ '.$version.'\.(.*?) /',$r,$match);
-        $dev = trim($match[0]);
-        if ($dev != ''){
-          $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`) VALUES ('',%d,'%s','%s'); ",$p['id'],$version,$dev);
+        preg_match('/'.$version.'\.(.*?) /',$r,$match);
+        $rel = @trim($match[0]);
+        if ($rel != ''){
+          $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$rel,SUPPORTED);
           mysql_query($sql) or die(mysql_error());
         } else {
-          $sql = '-- no dev version found; ';
+          $sql = '-- no supported releases found; ';
+        }
+        print '   '.$sql."\r\n";
+      }
+
+      // fetching dev releases
+      $cmd = "cd d".$version."; ".PATH_TO_DRUSH." pm-releases ".$p['unique']." | grep 'Development' | grep -v 'Recommended'";
+      $result = trim(`$cmd`);
+      
+      print "\r\n   ".$cmd."\r\n\r\n ".$result."\r\n";
+      $releases = explode("\n",$result);
+      $sql = '';
+      foreach($releases as $r){
+        preg_match('/'.$version.'\.(.*?) /',$r,$match);
+        $rel = @trim($match[0]);
+        if ($rel != ''){
+          $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$rel,DEV);
+          mysql_query($sql) or die(mysql_error());
+        } else {
+          $sql = '-- no dev releases found; ';
         }
         print '   '.$sql."\r\n";
       }
       print "\r\n";
       
     }
-
-    /*
-    // BAD REQUEST - CVS, haven't found git equivalent
-    else if (strpos($projectInfo,'InvalidRevision:')) {
-      // Requested version of Drupal doesn't support this module
-      print "   ========== Not supported in Drupal ".$version."\r\n\r\n";
-    }
-    //*/
     
     // BAD RESPONSE
     else {
       // Couldn't recognize file, don't do anything
-      print "   ========== I have no idea what's going on with this one...\r\n\r\n";
+      print "   ========== no idea what's going on with this one...\r\n\r\n";
     }
     
     // debug
