@@ -17,3 +17,8 @@ CREATE TABLE `aliases` (
   `alias` VARCHAR( 255 ) NOT NULL ,
   UNIQUE (`alias`)
 ) ENGINE = MYISAM ;
+
+/*
+ * Add column for release types, mostly to distinguish stable vs dev.
+ */
+ALTER TABLE  `versions` ADD  `type` INT( 1 ) NOT NULL DEFAULT '0' AFTER  `release`

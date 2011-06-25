@@ -15,9 +15,11 @@ if (CONFIG_FILE != 'PRESENT') {
 /**
  * Fetches all contrib projects as a raw DB object
  */
-function fetchContrib() {
+function fetchContrib($limit=NULL) {
   global $version;
-  $projectsSQL = sprintf("SELECT * FROM  `projects` WHERE `type` IN ('module','theme') AND `version` = '%s' AND `url` = '' AND `status` = 1; ",$version);
+  if ($limit && is_numeric($limit)) { $limitClause = ' LIMIT '.$limit; }
+  else { $limitClause = ''; }
+  $projectsSQL = sprintf("SELECT * FROM  `projects` WHERE `type` IN ('module','theme') AND `version` = '%s' AND `url` = '' AND `status` = 1 %s; ",$version,$limitClause);
   $projects = mysql_query($projectsSQL);
   
   return $projects;
@@ -141,7 +143,7 @@ function formModules($v){
   while ($group = mysql_fetch_assoc($groups)) {
   
     $sql = sprintf(
-      "SELECT p.`id`,`unique`,`title`,GROUP_CONCAT(v.release ORDER BY v.release DESC SEPARATOR '%s') as `releases` ".
+      "SELECT p.`id`,`unique`,`title`,GROUP_CONCAT(v.release,'__',v.type ORDER BY v.type DESC SEPARATOR '%s') as `releases` ".
       "FROM `projects` AS p ".
       "LEFT JOIN `versions` AS v ON p.id = v.pid ".
       "WHERE p.package = '%s' AND p.version = '%s' AND `status` = 1 AND p.type = 'module' ".
@@ -164,14 +166,19 @@ function formModules($v){
         $releases = FALSE;
       }
     	
+//    	$output .= print_r($releases,true);
     	$output .= '
     				<label for="'. $p['unique'] .'-stable">
-    					<input id="'. $p['unique'] .'-stable" type="checkbox" name="makefile[modules]['. $p['unique'] .']" value="stable" /> <span class="title">'.$p['title'].'</span>
-    					<select id="'. $p['unique'].'" name="makefile[modules]['. $p['unique'] .']" disabled="disabled">
-    					 <option value="stable">Recommended</option>';
+    					<input id="'. $p['unique'] .'-stable" type="checkbox" /> <span class="title">'.$p['title'].'</span>
+    					<select id="'. $p['unique'].'" name="makefile[modules]['. $p['unique'] .']" disabled="disabled">';
               if ($releases){
       				  foreach($releases as $r){
-      				    $output .=' <option value="'. $r .'">Use '. $r .'</option>';
+      				    $parts = explode('__',$r);
+      				    if ($parts[1] == STABLE) {
+        				    $output .= '<option value="'.$parts[0].'">Recommended</option>';
+      				    } else {
+        				    $output .=' <option value="'. $parts[0] .'">Use '. $parts[0] .'</option>';
+        				  }
       				  }
       				}
     				  $output .= '</select>';
@@ -198,7 +205,7 @@ function formThemes($v){
   $output = '';
   
   $sql = sprintf(
-    "SELECT p.`id`,`unique`,`title`,GROUP_CONCAT(v.release ORDER BY v.release DESC SEPARATOR '%s') as `releases` ".
+    "SELECT p.`id`,`unique`,`title`,GROUP_CONCAT(v.release,'__',v.type ORDER BY v.type DESC SEPARATOR '%s') as `releases` ".
     "FROM `projects` AS p ".
     "LEFT JOIN `versions` AS v ON p.id = v.pid ".
     "WHERE p.version = '%s' AND `status` = 1 AND p.type = 'theme' ".
@@ -216,11 +223,17 @@ function formThemes($v){
   	$output .= '
   				<label for="'. $p['unique'] .'-stable">
   					<input id="'. $p['unique'] .'-stable" type="checkbox" name="makefile[themes]['. $p['unique'] .']" value="stable" /> <span class="title">'.$p['title'].'</span>
-  					<select id="'. $p['unique'].'" name="makefile[themes]['. $p['unique'] .']" disabled="disabled">
-  					 <option value="stable">Recommended</option>';
-  				  foreach($releases as $r){
-  				    $output .=' <option value="'. $r .'">Use '. $r .'</option>';
-  				  }
+  					<select id="'. $p['unique'].'" name="makefile[themes]['. $p['unique'] .']" disabled="disabled">';
+              if ($releases){
+      				  foreach($releases as $r){
+      				    $parts = explode('__',$r);
+      				    if ($parts[1] == STABLE) {
+        				    $output .= '<option value="'.$parts[0].'">Recommended</option>';
+      				    } else {
+        				    $output .=' <option value="'. $parts[0] .'">Use '. $parts[0] .'</option>';
+        				  }
+      				  }
+      				}
   				  $output .= '</select>';
   	$output .= "\r\n\t\t\t\t".'</label>'."\r\n\t\t\t\t";
     
@@ -547,15 +560,22 @@ function makeModules($modules=array(),$opts=array()){
       }
       // no, this is a "standard" module already in the db
       else {
-        if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
-        elseif($v) {$loop .= 'projects['.$k.'] = '.$v; }
-        else {}
-    
+        if ($v == 'stable'){
+          $loop .= 'projects[] = '.$k;
+        }
+        elseif ($v) {
+          $loop .= 'projects['.$k.'][version] = '.$v;
+        }
+        else {
+        }
+
+        $loop .= "\r\n";
+        $loop .= 'projects['.$k.'][type] = "module"';
         $loop .= "\r\n";
         
         // if a subdir is present, erase previous line and re-output with subdir. for cleanliness
         if ($subdir && $v == 'stable'){$loop = ''; }
-        if ($subdir && $v) {$loop .= 'projects['.$k.'][subdir] = '.$subdir."\r\n"; }
+        if ($subdir && $v) {$loop .= 'projects['.$k.'][subdir] = "'.$subdir.'"'."\r\n"; }
         
         $output .= $loop;        
       }
@@ -587,8 +607,10 @@ function makeThemes($themes=array(),$opts=array()){
       }
       else {
         if ($v == 'stable'){$loop .= 'projects[] = '.$k; }
-        else {$loop .= 'projects['.$k.'] = '.$v; }
+        else {$loop .= 'projects['.$k.'][version] = '.$v; }
         
+        $loop .= "\r\n";
+        $loop .= 'projects['.$k.'][type] = "theme"';
         $loop .= "\r\n";
         
         $output .= $loop;
