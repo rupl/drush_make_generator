@@ -489,6 +489,8 @@ function makeCore($core='drupal',$opts) {
   
   switch($core.$opts['version']):
 
+    // 6.x
+
     case 'openatrium6':
     case 'openatrium':
       $output .= '; Use Open Atrium instead of Drupal core:'."\r\n";
@@ -504,19 +506,27 @@ function makeCore($core='drupal',$opts) {
       $output .= 'projects[pressflow][download][type] = "get"'."\r\n";
       $output .= 'projects[pressflow][download][url] = "http://files.pressflow.org/pressflow-6-current.tar.gz"'."\r\n";
       break;
-    
-    case 'drupal7':
-      $output .= '; Drupal 7.x. Requires the `core` property to be set to 7.x.'."\r\n";
-      $output .= 'projects[drupal][version] = 7'."\r\n";
-      break;
-    
+
     case 'drupal6':
       $output .= '; Drupal 6.x core:'."\r\n";
       $output .= 'projects[drupal][version] = 6'."\r\n";
       break;
 
+    // 7.x
+
+    case 'pressflow7':
+      $output .= '; Use Pressflow instead of Drupal core:'."\r\n";
+      $output .= 'projects[pressflow][type] = "core"'."\r\n";
+      $output .= 'projects[pressflow][download][type] = "git"'."\r\n";
+      $output .= 'projects[pressflow][download][url] = "git://github.com/pressflow/7.git"'."\r\n";
+      break;
+    
+    case 'drupal7':
+      $output .= '; Drupal 7.x. Requires the `core` property to be set to 7.x.'."\r\n";
+      $output .= 'projects[drupal][version] = 7'."\r\n";
+      break;
+
     default:
-      // thought about sliding this under the 'drupal6' case but a proper error seems better
       $output .= '; No drupal core was selected'."\r\n";
       
   endswitch;
