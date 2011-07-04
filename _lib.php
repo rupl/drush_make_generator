@@ -120,7 +120,6 @@ function formCores($v){
   	$output .= '
   				<label for="'. $c['unique'] .'-stable">
   					<input id="'. $c['unique'] .'-stable" type="radio" name="makefile[core]" value="'. $c['unique'] .'" /> <span class="title">'.$c['title'].'</span>
-  					<!-- span class="dev"><input id="'. $c['unique'] .'-dev" type="radio" name="makefile[core]" value="'. $c['unique'] .'dev" /> Use dev branch</span -->
   				</label>'."\r\n";
   endwhile;
   
@@ -152,7 +151,6 @@ function formModules($v){
       SQL_SEPARATOR,
       $group['groupName'],$v
       );
-//    $output .= $sql;
     $projects = mysql_query($sql);
 
     $groupSafe = str_replace(' ','_',strtolower($group['groupName']));
@@ -166,7 +164,6 @@ function formModules($v){
         $releases = FALSE;
       }
     	
-//    	$output .= print_r($releases,true);
     	$output .= '
     				<label for="'. $p['unique'] .'-stable">
     					<input id="'. $p['unique'] .'-stable" type="checkbox" /> <span class="title">'.$p['title'].'</span>
@@ -214,7 +211,6 @@ function formThemes($v){
     SQL_SEPARATOR,
     $v
     );
-  // $output .= $sql;
   $projects = mysql_query($sql);
 
   while($p = mysql_fetch_assoc($projects)):
