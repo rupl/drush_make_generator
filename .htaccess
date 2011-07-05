@@ -44,11 +44,12 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
   RewriteEngine on
 
-  # Rewrite URLs of the form '/a/XXX' to the form 'file.php?short=XXX'.
+  # Rewrite URLs of the form '/a/XXX' to the form 'file.php?alias=XXX'.
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{REQUEST_URI} !=/favicon.ico
-  RewriteRule ^a/(.*)$ file.php?short=$1 [L,QSA]
+  RewriteRule ^a/([^/]*)/raw$ file.php?alias=$1&raw [L,QSA]
+  RewriteRule ^a/([^/]*)$ file.php?alias=$1 [L,QSA]
 </IfModule>
 
 # Password Protect admin functionality

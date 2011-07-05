@@ -20,7 +20,7 @@ define('SQL_SEPARATOR','|');
 
 // major release of Drupal
 global $version;
-$version = (isset($_GET['v'])) ? $_GET['v'] : 6;
+$version = (isset($_GET['v'])) ? $_GET['v'] : 7;
 
 
 // path to drush. default assumes you have an alias 'drush'

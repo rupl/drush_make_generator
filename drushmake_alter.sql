@@ -12,11 +12,13 @@ ALTER TABLE  `versions` ADD  `url` TEXT NULL AFTER  `release`;
  * Add table for short URLs
  */
 CREATE TABLE `aliases` (
-  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-  `makefile` INT NOT NULL ,
-  `alias` VARCHAR( 255 ) NOT NULL ,
-  UNIQUE (`alias`)
-) ENGINE = MYISAM ;
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `token` varchar(255) NOT NULL,
+  `alias` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `alias` (`alias`),
+  UNIQUE KEY `token` (`token`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 /*
  * Add column for release types, mostly to distinguish stable vs dev.
