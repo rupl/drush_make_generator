@@ -311,12 +311,13 @@ function formOpts($version){
       include <a href="https://github.com/rupl/drush_make_generator/raw/master/prep.sh" target="_blank">prep.sh</a>&nbsp;
       <input id="o-prep" type="checkbox" name="makefile[opts][prep]" value="include" />
     </label>
-*/
   $output .= '<br><h4>Short URL:</h4>
     <label for="o-short">
       http://'.$domain.'/a/
       <input id="o-prep" type="text" name="makefile[opts][alias]" placeholder="alias" />
     </label>';
+*/
+
   return $output;
   
 }
