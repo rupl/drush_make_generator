@@ -2,16 +2,30 @@
 
 include('_lib.php');
 
-// sanitize token and pull makefile from db
-$token = (isset($_REQUEST['token']) && sanitize('token',$_REQUEST['token'])) ? $_REQUEST['token'] : '';
-$mode = (isset($_GET['raw'])) ? 'raw' : FALSE;
-$makefile = generateMakefile($token,$mode);
+// sanitize token or alias
+$token = (isset($_REQUEST['token']) && sanitize('token',$_REQUEST['token'])) ? $_REQUEST['token'] : FALSE;
+$alias = (isset($_REQUEST['alias']) && sanitize('alias',$_REQUEST['alias'])) ? $_REQUEST['alias'] : FALSE;
+
+// pull token if alias was supplied
+if ($alias) {
+  $aliasSQL = sprintf("SELECT token FROM aliases WHERE alias = '%s';",$alias);
+  $aliasResult = mysql_query($aliasSQL);
+  if ($a = mysql_fetch_assoc($aliasResult)){
+    $token = $a['token'];
+  }
+}
+
+// pull makefile from DB
+$opts['raw']    = (isset($_GET['raw'])) ? TRUE : FALSE;
+$opts['alias']  = ($alias)              ? $alias : FALSE;
+$makefile = generateMakefile($token,$opts);
 
 if (!$makefile){
   $fail = 'fail';
   $error = "Something broke :(\r\n
 Check your URL...\r\n\r\n\r\n
-...or if there's an error onscreen post it at https://github.com/rupl/drush_make_generator/issues - thanks!";
+...or if there's an error onscreen and you feel generous,
+you could post it at https://github.com/rupl/drush_make_generator/issues - thanks!";
 }
 
 
@@ -20,7 +34,7 @@ Check your URL...\r\n\r\n\r\n
 
 
 // output mode?
-if ($mode == 'raw') {
+if (isset($opts['raw']) && $opts['raw'] == 'raw') {
 
   // raw/permalink
   header("Content-type: text/plain\r\n");
@@ -78,8 +92,8 @@ if ($mode == 'raw') {
   		<h2>Your makefile is ready</h2>
   		<p>We've saved it for you as well!</p>
   		<ul>
-  		  <li><a href="<?php print fileURL($token); ?>">Bookmark</a></li>
-  		  <li><a href="<?php print fileURL($token,'raw'); ?>">raw makefile</a></li>
+  		  <li><a href="<?php print fileURL($token,$opts); ?>">Bookmark</a></li>
+  		  <li><a href="<?php $opts['raw'] = 'raw'; print fileURL($token,$opts); ?>">raw makefile</a></li>
   		  <li>or (in the future) update previous makefiles</li>
   		</ul>
       <textarea name="makefile" id="makefile"><?php print $makefile; ?></textarea>

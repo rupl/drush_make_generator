@@ -298,6 +298,7 @@ function formLibs(){
  */
 function formOpts($version){
   $output = '';
+  $domain = $_SERVER['HTTP_HOST'];
   
   $output .= '<h4>Put modules in: </h4>
     <label for="o-contribdir">
@@ -310,12 +311,12 @@ function formOpts($version){
       include <a href="https://github.com/rupl/drush_make_generator/raw/master/prep.sh" target="_blank">prep.sh</a>&nbsp;
       <input id="o-prep" type="checkbox" name="makefile[opts][prep]" value="include" />
     </label>
-    <h4>Short URL:</h4>
-    <label for="o-short">
-      http://drushmake.me/a/
-      <input id="o-prep" type="text" name="makefile[opts][short]" placeholder="" />
-    </label>';
 */
+  $output .= '<br><h4>Short URL:</h4>
+    <label for="o-short">
+      http://'.$domain.'/a/
+      <input id="o-prep" type="text" name="makefile[opts][alias]" placeholder="alias" />
+    </label>';
   return $output;
   
 }
@@ -388,7 +389,7 @@ function formDownload($type='libraries',$download=array()){
 /**
  * fetch makefile and output
  */
-function generateMakefile($token,$mode=''){
+function generateMakefile($token,$opts=array()){
   $makefile = '';
 
   $clean = sanitize('token',$token);
@@ -405,9 +406,7 @@ function generateMakefile($token,$mode=''){
       $opts     = unserialize($m['opts']);
       $share    = TRUE;
 
-      if ($mode == 'raw') {$opts['raw'] = TRUE; }
-
-      $makefile = makeFile($clean,$version,$core,$modules,$themes,$libs,$opts);
+      $makefile = makeMakefile($clean,$version,$core,$modules,$themes,$libs,$opts);
 
       return $makefile;
   } else {
@@ -421,12 +420,12 @@ function generateMakefile($token,$mode=''){
 /**
  * makefile template
  */
-function makeFile($token,$v,$core,$modules,$themes,$libs,$opts){
+function makeMakefile($token,$v,$core,$modules,$themes,$libs,$opts){
   $opts['version'] = $v;
 
   $makefile = '; ----------------
 ; Generated makefile from http://drushmake.me
-; Permanent URL: '.fileUrl($token,$opts).'
+; Permanent URL: '.fileURL($token,$opts).'
 ; ----------------
 ;
 ; This is a working makefile - try it! Any line starting with a `;` is a comment.
@@ -470,7 +469,6 @@ api = 2
 '.makeLibs($libs,$opts).'
 
 '; // end of makefile
-  
   
   return $makefile;
 
@@ -761,9 +759,16 @@ function sanitize($type='token',$data){
   switch ($type) {
     case 'token':
       // only accept 12 chars made of a-f and 0-9
-      $clean = (isset($data) && preg_match('/^[a-f0-9]{12}/',$data)) ? $data : FALSE;
+      $clean = ($data && preg_match('/^[a-f0-9]{12}/',$data)) ? $data : FALSE;
       break;
     
+    case 'alias':
+      // only accept 1-64 chars a-z, 0-9, hyphens, and underscores
+      $data = strtolower($data);
+      $string = preg_replace('/[^a-z0-9\-_]/','',$data);
+      $clean = ($string && preg_match('/^[a-z0-9\-_]{1,64}$/',$string)) ? $string : FALSE;
+      break;
+
     default:
       $clean = FALSE;
       break;
@@ -774,20 +779,28 @@ function sanitize($type='token',$data){
 
 
 /**
- * Generate URL requests for a token. For easy switching later.
+ * Generate URL requests for a token.
  */
 function fileURL($token='',$opts=array()){
-
-  // http://drushmake.me/a/short-url
-
-  $raw = '';
-  if (isset($opts['raw'])) {
-    $raw = '&raw';
-  }
-
   $domain = $_SERVER['HTTP_HOST'];
 
-  return 'http://'.$domain.'/file.php?token='.$token.$raw;
+  // raw output mode
+  $raw = '';
+  if (isset($opts['raw']) && $opts['raw'] == 'raw') {
+    $raw = TRUE;
+  }
+
+  // format URL
+  if (!empty($opts['alias'])) {
+    $raw = ($raw) ? '/raw' : '';
+    $token = $opts['alias'];
+    $url = 'http://'.$domain.'/a/'.$token.$raw;
+  } else {
+    $raw = ($raw) ? '&raw' : '';
+    $url = 'http://'.$domain.'/file.php?token='.$token.$raw;
+  }
+
+  return $url;
 
 }
 
