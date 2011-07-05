@@ -8,3 +8,6 @@ _config.php
 css/style.old.css
 dev
 dev/*
+drushmake_*.sql
+google*.html
+favicon.gif
