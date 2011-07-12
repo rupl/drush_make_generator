@@ -14,7 +14,7 @@ include('_lib.php');
   $projects = fetchContrib();
   /*
     // debug
-    $psql = sprintf("SELECT * FROM `projects` WHERE `type` = 'module' AND `status` = 1 LIMIT 10; ");
+    $psql = sprintf("SELECT * FROM `projects` WHERE `type` = 'module' AND `version` = %d AND `status` = 1 LIMIT 10; ",$version);
     $projects = mysql_query($psql);
   //*/
 
@@ -42,17 +42,18 @@ include('_lib.php');
     print "\r\ncmd:\r\n   ".$cmd."\r\n\r\nresult:\r\n   ".$result."\r\n";
 
     // release string; this regex catches a space on each side to ensure any releases like 6.x-6.0 or 7.x-7.0 get fully captured
-    preg_match('/'.$version.'\.x-\d{1}\.\d*(-[a-zA-Z0-9]*)?/',$result,$recVersion);
+    preg_match('/'.$version.'\.(.*?) /',$result,$recVersion);
 
     // record recommended release
     $releases = explode("\n",$result);
     $sql = '';
     if (isset($recVersion[0])){
-      $recommended = substr($recVersion[0],4);
+      $recommended = trim(substr($recVersion[0],4));
       $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$recommended,STABLE);
       mysql_query($sql) or die(mysql_error());
     } else {
       $sql = '-- no recommended releases found; ';
+      $recVersion[0] = '';
     }
     print '   '.$sql."\r\n";
 
@@ -80,7 +81,7 @@ include('_lib.php');
       
       // parse output of .info file for package
       preg_match('/package\s+=\s+\"?([^\"\s\n]*)\"?/',$projectInfo,$package);
-      $packageName = ($package[1]) ? str_replace('\'','',$package[1]) : 'Other';
+      $packageName = (isset($package[1])) ? str_replace('\'','',$package[1]) : 'Other';
         
       // parse output of .info file for dependencies
       preg_match_all('/dependencies\[\]\s+=\s+(.*)/', $projectInfo, $d);
@@ -106,13 +107,14 @@ include('_lib.php');
       $sql = '';
       foreach($releases as $r){
         preg_match('/ '.$version.'\.(.*?) /',$r,$match);
-        $dev = @trim($match[0]);
-        $dev = substr($dev,4);
-        if ($dev != ''){
-          $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$dev,SUPPORTED);
+        $sup = @trim($match[0]);
+        $sup = trim(substr($sup,4));
+        if ($sup != ''){
+          $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$sup,SUPPORTED);
           mysql_query($sql) or die(mysql_error());
         } else {
           $sql = '-- no supported releases found; ';
+          $recVersion[0] = '';
         }
         print '   '.$sql."\r\n";
       }
@@ -125,9 +127,9 @@ include('_lib.php');
       $releases = explode("\n",$result);
       $sql = '';
       foreach($releases as $r){
-        preg_match('/ '.$version.'\.(.*?) /',$r,$match);
+        preg_match('/'.$version.'\.(.*?) /',$r,$match);
         $dev = @trim($match[0]);
-        $dev = substr($dev,4);
+        $dev = trim(substr($dev,4));
         if ($dev != ''){
           $sql = sprintf("INSERT INTO `versions` (`id`,`pid`,`version`,`release`,`type`) VALUES ('',%d,'%s','%s',%d); ",$p['id'],$version,$dev,DEV);
           mysql_query($sql) or die(mysql_error());
