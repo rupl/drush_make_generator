@@ -78,6 +78,7 @@ include('_lib.php');
 	</div>
 	
   <?php include('footer.php'); ?>
-	
+
+  <a href="http://github.com/rupl/drush_make_generator" id="fork"><img src="https://a248.e.akamai.net/assets.github.com/img/c641758e06304bc53ae7f633269018169e7e5851/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f77686974655f6666666666662e706e67" alt="Fork drush_make generator on GitHub"></a>
 </body>
 </html>
