@@ -208,6 +208,8 @@ footer p.github a {display: block; width: 31px; height: 31px; }
 footer a[rel=license] {display: block; margin-bottom: 1em; }
 footer a[class~=org] {display: block; width: 31px; height: 31px; background: url('/img/fourkitchens-drushmake-me-logo-31x31.png') no-repeat left top; text-indent: -9999em; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; }
 
+#fork {display: none; }
+
 /* -- special styles for drupal version selection -- */
 
 #fs-version label {
@@ -273,6 +275,8 @@ footer a[class~=org] {display: block; width: 31px; height: 31px; background: url
   footer p.github a {position: absolute; top: 0; }
   footer a[rel=license] {float: right; margin-right: 1em; }
   footer a[class~=org] {float: right; margin-right: 1em; }
+
+  #fork {display: block; position: fixed; top: 0; left: 0; border: 0; }
 }
 
 /* @import url('import.css') all and (min-width: 767px); */
