@@ -35,7 +35,7 @@ include('_lib.php');
 		<nav>
 			<ol>
 				<li><a href="/">what's going on?</a></li>
-				<li><a href="/index.php#generate">generate</a></li>
+				<li><a href="/#generate">generate</a></li>
 				<li><a href="http://drupal.org/project/drush_make">make</a></li>
 			</ol>
 		</nav>
