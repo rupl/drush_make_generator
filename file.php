@@ -78,7 +78,7 @@ if (isset($opts['raw']) && $opts['raw'] == 'raw') {
 		<nav>
 			<ol>
 				<li><a href="/">what's going on?</a></li>
-				<li><a href="/index.php#generate">generate</a></li>
+				<li><a href="/#generate">generate</a></li>
 				<li><a href="http://drupal.org/project/drush_make">make</a></li>
 			</ol>
 		</nav>
@@ -110,4 +110,4 @@ if (isset($opts['raw']) && $opts['raw'] == 'raw') {
 </body>
 </html>
 
-<?php } /* end of output mode */ ?>
+<?php } /* end of output mode */
