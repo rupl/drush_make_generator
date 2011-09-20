@@ -22,10 +22,9 @@ include('_lib.php');
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 	
 	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans">
-	<link rel="stylesheet" href="css/960.css" media="(min-width: 960px)">
-	<link rel="stylesheet" href="css/formalize.css" media="(min-width: 481px)">
-	<link rel="stylesheet" href="css/style.css">
-	<script src="js/libs/modernizr-1.6.min.js"></script>
+	<link rel="stylesheet" href="/css/960.css" media="only all and (min-width: 960px)">
+	<link rel="stylesheet" href="/css/formalize.css" media="only screen and (min-width: 481px)">
+	<link rel="stylesheet" href="/css/style.css" media="all">
 </head>
 
 <body class="container_12">
