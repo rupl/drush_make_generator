@@ -25,6 +25,7 @@ include('_lib.php');
 	<link rel="stylesheet" href="/css/960.css" media="only all and (min-width: 960px)">
 	<link rel="stylesheet" href="/css/formalize.css" media="only screen and (min-width: 481px)">
 	<link rel="stylesheet" href="/css/style.css" media="all">
+	<script src="/js/libs/modernizr.custom.js"></script>
 </head>
 
 <body class="container_12">
