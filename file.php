@@ -56,7 +56,7 @@ if (isset($opts['raw']) && $opts['raw'] == 'raw') {
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	
-	<title>Drush Make Generator - Customized Drupal Installs</title>
+	<title>Drush Make Generator ❤ a UI to Customize Drupal Installs</title>
 	<meta name="description" content="http://drushmake.me helps you build install profiles or quickly install Drupal using drush make. Powered by Four Kitchens. ">
 	<meta name="author" content="Chris Ruppel">
 	
