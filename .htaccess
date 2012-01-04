@@ -51,11 +51,3 @@ DirectoryIndex index.php
   RewriteRule ^a/([^/]*)/raw$ file.php?alias=$1&raw [L,QSA]
   RewriteRule ^a/([^/]*)$ file.php?alias=$1 [L,QSA]
 </IfModule>
-
-# Password Protect admin functionality
-<FilesMatch "update.php">
-AuthName "Admin area"
-AuthType Basic
-AuthUserFile /home/cruppel/.htpasswd
-require valid-user
-</FilesMatch>
