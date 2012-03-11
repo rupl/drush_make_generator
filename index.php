@@ -34,9 +34,9 @@ include('_lib.php');
 		<h1>Drush Make Generator</h1>
 		<nav>
 			<ol>
-				<li><a href="/">what's going on?</a></li>
-				<li><a href="/#generate">generate</a></li>
-				<li><a href="http://drupal.org/project/drush_make">make</a></li>
+				<li><a href="/#what" id="huh">what's going on?</a></li>
+				<li><a href="/#generate" id="gen">generate</a></li>
+				<li><a href="http://drupal.org/project/drush_make" id="make">make</a></li>
 			</ol>
 		</nav>
 	</header>

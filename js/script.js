@@ -13,6 +13,10 @@ $(function(){
   // initialize
   $('#fs-version :radio:checked').parent().addClass('active');
 
+  $('#huh').click(function(e){
+    $('#what, #need').addClass('open'); // Look in CSS for animation
+    e.preventDefault(); // Don't let the fallback URL load since we have JS
+  });
   
   // slide to on-page anchors
   $.localScroll({

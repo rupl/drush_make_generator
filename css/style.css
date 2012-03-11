@@ -84,10 +84,6 @@ button {  width: auto; overflow: visible; }
 .clearfix { zoom: 1; }
 
 
- /* Primary Styles
-    Author: 
- */
-
 
 /* -- ALL screens -- */
 html {width: 100%; height: 100%; background: #223; }
@@ -263,6 +259,23 @@ footer a[class~=org] {display: block; width: 31px; height: 31px; background: url
 	a.another {display: inline-block; margin: 0 0 0 35%; }
 
 	fieldset#fs-opts input[type=text] {position: relative; top: -2px; }
+
+  /* -- styles for JS whizbang -- */
+  .js #what,
+  .js #need {
+    overflow: hidden;
+    height: 0;
+    -webkit-transition: .8s all ease-in-out;
+       -moz-transition: .8s all ease-in-out;
+        -ms-transition: .8s all ease-in-out;
+         -o-transition: .8s all ease-in-out;
+            transition: .8s all ease-in-out;
+  }
+  .js #what.open,
+  .js #need.open {
+    height: 300px;
+  }
+
 }
 
 
