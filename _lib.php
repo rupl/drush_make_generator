@@ -61,19 +61,19 @@ function formMakefile($v){
   
   $output .= formCores($v);
   $output .= '<fieldset id="fs-contrib">
-    <legend>Modules</legend>';
+    <legend><p>Modules</p></legend>';
   $output .= formModules($v);
   $output .= '</fieldset>
   <fieldset id="fs-themes">
-    <legend>Themes</legend>';
+    <legend><p>Themes</p></legend>';
   $output .= formThemes($v);
   $output .= '</fieldset>
   <fieldset id="fs-libs">
-    <legend>Libraries</legend>';
+    <legend><p>Libraries</p></legend>';
   $output .= formLibs($v);
   $output .= '</fieldset>
   <fieldset id="fs-opts">
-    <legend>Options</legend>';
+    <legend><p>Options</p></legend>';
   $output .= formOpts($v);
   $output .= '</fieldset>';
   
@@ -94,7 +94,7 @@ function formVersion($v){
   if ($v == 7){$checked6 = ''; $checked7 = 'checked="checked"'; }
   
   $output .= '<fieldset id="fs-version">
-    <legend>Drupal Version <span class="small">Since different modules and themes are available for each major version<br /> of Drupal, the form will be <strong>reset</strong> if you change this setting.</span></legend>
+    <legend><p>Drupal Version <span class="small">Since different modules and themes are available for each major version<br /> of Drupal, the form will be <strong>reset</strong> if you change this setting.</span></p></legend>
     <label for="o-version6"><input id="o-version6" type="radio" name="makefile[version]" value="6" '.$checked6.' /> <span class="title">Drupal 6</span></label>
     <label for="o-version7"><input id="o-version7" type="radio" name="makefile[version]" value="7" '.$checked7.'/> <span class="title">Drupal 7</span></label>
   </fieldset>';
@@ -114,7 +114,7 @@ function formCores($v){
   $cores = mysql_query($coresSQL);
   
 	$output .= '<fieldset class="fs-core">
-			<legend>Drupal core or distribution</legend>';
+			<legend><p>Drupal core or distribution</p></legend>';
 
   while($c = mysql_fetch_assoc($cores)):
   	$output .= '
