@@ -64,7 +64,7 @@ if (isset($opts['raw']) && $opts['raw'] == 'raw') {
 	<link rel="shortcut icon" href="/favicon.ico">
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 	
-	<!-- link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans" -->
+	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Droid+Sans">
 	<link rel="stylesheet" href="/css/960.css" media="only all and (min-width: 960px)">
 	<link rel="stylesheet" href="/css/formalize.css" media="only screen and (min-width: 481px)">
 	<link rel="stylesheet" href="/css/style.css">
@@ -84,11 +84,14 @@ if (isset($opts['raw']) && $opts['raw'] == 'raw') {
 		</nav>
 	</header>
 	
-	<div class="grid_12" id="what">
+	<div class="grid_12" id="makefile">
 		<?php if (isset($fail)){ ?>
+
   		<h2>Dang it...</h2>
   		<textarea name="makefile" id="makefile" class="<?php print $fail ?>"><?php print $error; ?></textarea>
+
 		<?php } else { ?>
+
   		<h2>Your makefile is ready</h2>
   		<p>We've saved it for you as well!</p>
   		<ul>
@@ -97,6 +100,7 @@ if (isset($opts['raw']) && $opts['raw'] == 'raw') {
   		  <li>or (in the future) update previous makefiles</li>
   		</ul>
       <textarea name="makefile" id="makefile"><?php print $makefile; ?></textarea>
+
 		<?php } ?>
 	</div>
 	

@@ -117,9 +117,14 @@ function formCores($v){
 			<legend><p>Drupal core or distribution</p></legend>';
 
   while($c = mysql_fetch_assoc($cores)):
+    if ($c['unique'] == 'drupal') {
+      $selected = ' checked';
+    } else {
+      $selected = '';
+    }
   	$output .= '
   				<label for="'. $c['unique'] .'-stable">
-  					<input id="'. $c['unique'] .'-stable" type="radio" name="makefile[core]" value="'. $c['unique'] .'" /> <span class="title">'.$c['title'].'</span>
+  					<input id="'. $c['unique'] .'-stable" type="radio" name="makefile[core]" value="'. $c['unique'] .'"'. $selected .' /> <span class="title">'.$c['title'].'</span>
   				</label>'."\r\n";
   endwhile;
   
