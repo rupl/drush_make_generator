@@ -1,5 +1,6 @@
 <?
 
+// include this library
 include('_lib.php');
 
 ?><!doctype html>  
