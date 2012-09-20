@@ -22,8 +22,7 @@ website, including:
 INSTALLATION / SETUP
 --------------------
 
-1. First time installs should import drushmake_gen.sql into your database.
-   drushmake_alter.sql upgrades from the previous version only
+1. First time installs should import drushmake_gen.sql and drushmake_alter.sql
 2. Copy _config.example.php to _config.php and make your changes
 3. Install each version of drupal that you want to generate makefiles for.
    The scripts expect them to live in the root directory at /d6, /d7, etc.
