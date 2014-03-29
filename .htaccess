@@ -50,4 +50,9 @@ DirectoryIndex index.php
   RewriteCond %{REQUEST_URI} !=/favicon.ico
   RewriteRule ^a/([^/]*)/raw$ file.php?alias=$1&raw [L,QSA]
   RewriteRule ^a/([^/]*)$ file.php?alias=$1 [L,QSA]
+
+  RewriteCond %{HTTP_HOST} ^sudo\..*
+  RewriteRule ^a-sandwich$ http://xkcd.com/149/ [L,R=301]
+
+  RewriteRule ^a-sandwich$ ee.php [L]
 </IfModule>
