@@ -509,7 +509,7 @@ function makeCore($core='drupal',$opts) {
 
     case 'drupal6':
       $output .= '; Drupal 6.x core:'."\r\n";
-      $output .= 'projects[drupal][version] = 6'."\r\n";
+      $output .= 'projects[drupal][version] = 6.x'."\r\n";
       break;
 
     // 7.x
@@ -523,7 +523,7 @@ function makeCore($core='drupal',$opts) {
     
     case 'drupal7':
       $output .= '; Drupal 7.x. Requires the `core` property to be set to 7.x.'."\r\n";
-      $output .= 'projects[drupal][version] = 7'."\r\n";
+      $output .= 'projects[drupal][version] = 7.x'."\r\n";
       break;
 
     default:
