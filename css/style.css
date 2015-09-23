@@ -95,7 +95,8 @@ body {color: #dea; padding: 2%; }
 
 header {}
 
-h1,h2 {margin: .5em 0; font-size: 2em; font-family: "Droid Sans", sans-serif; color: #ed3; }
+h1,h2 {margin: .5em 0; font-size: 2em; font-family: sans-serif; color: #ed3; }
+.wf-droid h1, .wf-droid h2 {font-family: "Droid Sans";}
 h4 {clear: both; margin: .5em; padding: 5px; background: #456; color: #eee; border-radius: 3px; }
 nav {}
 nav li {display: inline-block; padding: 0 .5em; }
@@ -146,7 +147,7 @@ fieldset legend p {
   color: #faa51a;
   font-size: 2em;
   font-weight: 400;
-  font-family: "Droid Sans", sans-serif;
+  font-family: sans-serif;
   text-shadow: 1px 1px 0 #000;
   -webkit-box-shadow: 0 0 4px rgba(0,0,0,0.5);
      -moz-box-shadow: 0 0 4px rgba(0,0,0,0.5);
@@ -157,6 +158,9 @@ fieldset legend p {
   background: #444;
   background: -webkit-gradient(linear, left top, left bottom, from(#606060), to(#444));
   background: -moz-linear-gradient(top,  #606060,  #444);
+}
+.wf-droid fieldset legend p {
+  font-family: "Droid Sans";
 }
 label,
 .download {
@@ -267,11 +271,13 @@ footer a[class~=org] {display: block; width: 31px; height: 31px; background: url
   h4 {width: 30%; float: left; text-align: right; margin: 0; padding: 0 2% 0 0; font-size: 1.4em; color: #333; background: transparent; position: relative; top: -2px; }
   label, .download {display: block; margin: 0 0 0 33%; padding: 0 0 .5em 2%; border-left: 1px solid #bbb; }
   label input[type=checkbox],
-    .download input[type=checkbox] {position: relative; top: -1px; }
+  .download input[type=checkbox] {position: relative; top: -1px; }
   label span.title,
-   .download span.title {display: inline-block; padding-left: 4px; font-family: "Droid Sans", sans-serif; }
+  .download span.title {display: inline-block; padding-left: 4px; font-family: sans-serif; }
+  .wf-droid label span.title,
+  .wf-droid .download span.title {font-family: "Droid Sans"; }
   label select,
-   .download select {float: none; display: inline; }
+  .download select {float: none; display: inline; }
 
   div.download {clear: both; padding-top: .5em; border-left: 0; }
   div.download .remove {clear: left; float: left; position: relative; }
